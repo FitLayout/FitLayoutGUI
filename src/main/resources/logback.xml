@@ -72,6 +72,11 @@
 		<appender-ref ref="cssbox" />
 	</logger>-->
 
+	<!-- <logger name="cz.vutbr.fit.layout.cssbox.impl" additivity="false">
+		<level value="trace" />
+		<appender-ref ref="cssbox" />
+	</logger> -->
+
 	<root>
 		<appender-ref ref="cssbox" />
 	</root>

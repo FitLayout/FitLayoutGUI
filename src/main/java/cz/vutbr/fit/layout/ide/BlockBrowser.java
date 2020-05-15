@@ -71,6 +71,15 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
+import java.awt.event.InputEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.JCheckBoxMenuItem;
 
 /**
  * @author burgetr
@@ -100,7 +109,7 @@ public class BlockBrowser implements Browser
     private Map<JToggleButton, CanvasClickListener> canvasClickToggleListeners;
     
     //main tabs
-    private List<BrowserTab> browserTabs;
+    private List<BrowserTabState> browserTabs;
     private BoxTreeTab boxTreeTab;
     private SegmentationTab segmentationTab;
 
@@ -126,6 +135,13 @@ public class BlockBrowser implements Browser
     private JButton showArtAreaButton = null;
     private JButton showColumnsButton = null;
     private JTabbedPane toolTabs = null;
+    
+    //menu
+    private JMenuBar menuBar;
+    private JMenu mnFile;
+    private JMenuItem mntmQuit;
+    private JMenu mnView;
+    private List<JCheckBoxMenuItem> tabViewItems;
 
 
     public BlockBrowser()
@@ -136,6 +152,7 @@ public class BlockBrowser implements Browser
         canvasClickAlwaysListeners = new LinkedList<>();
         canvasClickToggleListeners = new HashMap<>();
         browserTabs = new LinkedList<>();
+        tabViewItems = new LinkedList<>();
         proc = new GUIProcessor() {
             @Override
             protected void treesCompleted()
@@ -169,9 +186,9 @@ public class BlockBrowser implements Browser
     @Override
     public void refreshView()
     {
-        for (BrowserTab tab : browserTabs)
+        for (BrowserTabState tab : browserTabs)
         {
-            tab.refreshView();
+            tab.getBrowserTab().refreshView();
         }
     }
     
@@ -399,21 +416,55 @@ public class BlockBrowser implements Browser
     
     public void reloadServiceParams()
     {
-        for (BrowserTab tab : browserTabs)
+        for (BrowserTabState tab : browserTabs)
         {
-            tab.reloadServiceParams();
+            tab.getBrowserTab().reloadServiceParams();
         }
     }
     
-    public void addTab(BrowserTab tab)
+    public void addTab(BrowserTab tab, boolean optional, boolean visible)
     {
-        browserTabs.add(tab);
-        getToolTabs().addTab(tab.getTitle(), null, tab.getTabPanel(), null);
+        BrowserTabState state = new BrowserTabState(tab, optional);
+        state.setVisible(visible);
+        browserTabs.add(state);
+        if (optional)
+        {
+            var item = createTabViewItem(state);
+            tabViewItems.add(item);
+            mnView.add(item);
+        }
+        if (visible)
+            getToolTabs().addTab(tab.getTitle(), null, tab.getTabPanel(), null);
+    }
+    
+    private JCheckBoxMenuItem createTabViewItem(BrowserTabState tabState)
+    {
+        String title = tabState.getBrowserTab().getTitle();
+        var item = new JCheckBoxMenuItem(title);
+        item.setSelected(tabState.isVisible());
+        item.addItemListener(new ItemListener()
+        {
+            @Override
+            public void itemStateChanged(ItemEvent e)
+            {
+                if (e.getStateChange() == ItemEvent.SELECTED)
+                {
+                    getToolTabs().addTab(tabState.getBrowserTab().getTitle(), null, tabState.getBrowserTab().getTabPanel(), null);
+                }
+                else
+                {
+                    int i = getToolTabs().indexOfTab(title);
+                    if (i != -1)
+                        getToolTabs().remove(i);
+                }
+            }
+        });
+        return item;
     }
     
     private void tabSelected(int index)
     {
-        BrowserTab tab = browserTabs.get(index);
+        BrowserTab tab = browserTabs.get(index).getBrowserTab();
         if (tab != null)
         {
             int mpos = getMainSplitter().getDividerLocation();
@@ -424,7 +475,7 @@ public class BlockBrowser implements Browser
             getInfoSplitter().setDividerLocation(ipos);
         }
         for (int i = 0; i < browserTabs.size(); i++)
-            browserTabs.get(i).setActive(i == index);
+            browserTabs.get(i).getBrowserTab().setActive(i == index);
     }
     
     //=============================================================================================================
@@ -489,8 +540,6 @@ public class BlockBrowser implements Browser
         button.setToolTipText("Show " + label.toLowerCase() + " when the canvas is clicked");
         return button;
     }
-
-
     
     /** This is called when the browser canvas is clicked */
     private void canvasClick(int x, int y)
@@ -694,9 +743,9 @@ public class BlockBrowser implements Browser
     {
         //add the default tabs
         boxTreeTab = new BoxTreeTab(this);
-        addTab(boxTreeTab);
+        addTab(boxTreeTab, false, true);
         segmentationTab = new SegmentationTab(this);
-        addTab(segmentationTab);
+        addTab(segmentationTab, true, true);
     }
     
     //===========================================================================
@@ -715,6 +764,7 @@ public class BlockBrowser implements Browser
             mainWindow.setVisible(true);
             mainWindow.setBounds(new Rectangle(0, 0, 1489, 256));
             mainWindow.setMinimumSize(new Dimension(1200, 256));
+            mainWindow.setJMenuBar(getMenuBar());
             mainWindow.setContentPane(getContainer());
             mainWindow.addWindowListener(new java.awt.event.WindowAdapter()
             {
@@ -1073,7 +1123,6 @@ public class BlockBrowser implements Browser
         return infoSplitter;
     }
 
-
     /**
      * This method initializes showArtAreaButton	
      * 	
@@ -1130,7 +1179,6 @@ public class BlockBrowser implements Browser
         return showColumnsButton;
     }
 
-
     private JTabbedPane getToolTabs()
     {
         if (toolTabs == null)
@@ -1146,6 +1194,58 @@ public class BlockBrowser implements Browser
         return toolTabs;
     }
 
+    private JMenuBar getMenuBar()
+    {
+        if (menuBar == null)
+        {
+            menuBar = new JMenuBar();
+            menuBar.add(getMnFile());
+            menuBar.add(getMnView());
+        }
+        return menuBar;
+    }
+
+    private JMenu getMnFile()
+    {
+        if (mnFile == null)
+        {
+            mnFile = new JMenu("File");
+            mnFile.setMnemonic('F');
+            mnFile.add(getMntmQuit());
+        }
+        return mnFile;
+    }
+
+    private JMenuItem getMntmQuit()
+    {
+        if (mntmQuit == null)
+        {
+            mntmQuit = new JMenuItem("Quit");
+            mntmQuit.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    mainWindow.setVisible(false);
+                    System.exit(0);
+                }
+            });
+            mntmQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));
+        }
+        return mntmQuit;
+    }
+
+    private JMenu getMnView()
+    {
+        if (mnView == null)
+        {
+            mnView = new JMenu("View");
+            mnView.setMnemonic('V');
+        }
+        return mnView;
+    }
+
+    //===========================================================================
+    
     private class Selection extends JPanel
     {
         private static final long serialVersionUID = 1L;
@@ -1156,6 +1256,8 @@ public class BlockBrowser implements Browser
             g.fillRect(0, 0, getWidth(), getHeight());
         }
     }
+
+    //===========================================================================
     
     public static void main(String[] args)
     {
