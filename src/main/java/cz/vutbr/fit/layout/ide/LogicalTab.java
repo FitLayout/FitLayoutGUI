@@ -70,13 +70,13 @@ public class LogicalTab extends BrowserTabBase
     public void refreshView()
     {
         //reloads the logical area tree from the processor
-        if (browser.getProcessor().getLogicalAreaTree() != null)
+        /*if (browser.getProcessor().getLogicalAreaTree() != null)
         {
             TreePath path = logicalTree.getSelectionPath();
             logicalTree.setModel(new LogicalTreeModel(browser.getProcessor().getLogicalAreaTree().getRoot()));
             if (path != null)
                 logicalTree.setSelectionPath(path);
-        }
+        }*/
         
     }
     //=================================================================================================
@@ -142,7 +142,7 @@ public class LogicalTab extends BrowserTabBase
 
     private void showAreaInLogicalTree(Area node)
     {
-        if (browser.getProcessor().getLogicalAreaTree() != null && browser.getProcessor().getLogicalAreaTree().getRoot() != null)
+        /*if (browser.getProcessor().getLogicalAreaTree() != null && browser.getProcessor().getLogicalAreaTree().getRoot() != null)
         {
             LogicalArea lnode = browser.getProcessor().getLogicalAreaTree().getRoot().findArea(node);
             if (lnode != null)
@@ -159,7 +159,7 @@ public class LogicalTab extends BrowserTabBase
                 //logicalTree.expandPath(select);
                 logicalTree.scrollPathToVisible(new TreePath(path));
             }
-        }
+        }*/
     }
     
 

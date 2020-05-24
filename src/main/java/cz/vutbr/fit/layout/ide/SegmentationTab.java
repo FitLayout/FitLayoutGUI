@@ -91,7 +91,7 @@ public class SegmentationTab extends BrowserTabBase implements CanvasClickListen
     @Override
     public void canvasClicked(int x, int y)
     {
-        if (isActive())
+        /*if (isActive())
         {
             List<Area> nodes = browser.getAreaTree().getAreasAt(x, y);
             if (!nodes.isEmpty())
@@ -114,7 +114,7 @@ public class SegmentationTab extends BrowserTabBase implements CanvasClickListen
                 showAreaInTree(node);
                 //showAreaInLogicalTree(node);
             }
-        }
+        }*/
     }
 
     //=================================================================================================
@@ -287,13 +287,13 @@ public class SegmentationTab extends BrowserTabBase implements CanvasClickListen
     public void refreshView()
     {
         //reloads the area tree from the processor
-        if (browser.getProcessor().getAreaTree() != null)
+        /*if (browser.getProcessor().getAreaTree() != null)
         {
             TreePath path = areaJTree.getSelectionPath();
             areaJTree.setModel(new AreaTreeModel(browser.getProcessor().getAreaTree().getRoot()));
             if (path != null)
                 areaJTree.setSelectionPath(path);
-        }
+        }*/
         
     }
 

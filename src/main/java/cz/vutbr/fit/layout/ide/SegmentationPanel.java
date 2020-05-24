@@ -6,38 +6,32 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import cz.vutbr.fit.layout.api.AreaTreeProvider;
+import cz.vutbr.fit.layout.api.ArtifactService;
 import cz.vutbr.fit.layout.impl.DefaultContentRect;
+import cz.vutbr.fit.layout.ontology.SEGM;
 
-public class SegmentationPanel extends JPanel
+public class SegmentationPanel extends ArtifactProviderPanel
 {
     private static final long serialVersionUID = 1L;
 
-    private BlockBrowser browser;
-
     private JPanel segmChoicePanel;
     private JLabel lblSegmentator;
-    private JComboBox<AreaTreeProvider> segmentatorCombo;
     private JButton segmRunButton;
     private JCheckBox segmAutorunCheckbox;
     private JButton btnOperators;
-    private ParamsPanel segmParamsPanel;
 
     protected OperatorConfigWindow operatorWindow;
 
     public SegmentationPanel(BlockBrowser browser)
     {
-        super();
-        this.browser = browser;
+        super(browser, SEGM.AreaTree);
+        
         GridBagLayout gbl_sourcesTab = new GridBagLayout();
         gbl_sourcesTab.columnWeights = new double[] { 1.0 };
         gbl_sourcesTab.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0 };
@@ -58,11 +52,9 @@ public class SegmentationPanel extends JPanel
         gbc_segmParamsPanel.fill = GridBagConstraints.BOTH;
         gbc_segmParamsPanel.gridx = 0;
         gbc_segmParamsPanel.gridy = 3;
-        add(getSegmParamsPanel(), gbc_segmParamsPanel);
+        add(getServiceParamsPanel(), gbc_segmParamsPanel);
         
-        AreaTreeProvider ap = (AreaTreeProvider) segmentatorCombo.getSelectedItem();
-        if (ap != null)
-            ((ParamsPanel) segmParamsPanel).setOperation(ap, null);
+        updateParamsPanel();
     }
 
     //====================================================================================================
@@ -70,16 +62,11 @@ public class SegmentationPanel extends JPanel
     public void segmentPage()
     {
         DefaultContentRect.resetId(); //reset the default ID generator to obtain the same IDs for every segmentation
-        if (segmentatorCombo.getSelectedIndex() != -1)
+        if (getServiceCombo().getSelectedIndex() != -1)
         {
-            AreaTreeProvider provider = segmentatorCombo.getItemAt(segmentatorCombo.getSelectedIndex());
-            browser.segmentPage(provider);
+            ArtifactService provider = getServiceCombo().getItemAt(getServiceCombo().getSelectedIndex());
+            getBrowser().createAndAddArtifact(provider);
         }
-    }
-    
-    public void reloadServiceParams()
-    {
-        ((ParamsPanel) getSegmParamsPanel()).reloadParams();
     }
     
     //====================================================================================================
@@ -92,7 +79,7 @@ public class SegmentationPanel extends JPanel
             FlowLayout flowLayout = (FlowLayout) segmChoicePanel.getLayout();
             flowLayout.setAlignment(FlowLayout.LEFT);
             segmChoicePanel.add(getLblSegmentator());
-            segmChoicePanel.add(getSegmentatorCombo());
+            segmChoicePanel.add(getServiceCombo());
             segmChoicePanel.add(getSegmRunButton());
             segmChoicePanel.add(getSegmAutorunCheckbox());
             segmChoicePanel.add(getBtnOperators());
@@ -107,27 +94,6 @@ public class SegmentationPanel extends JPanel
             lblSegmentator = new JLabel("Segmentator");
         }
         return lblSegmentator;
-    }
-
-    protected JComboBox<AreaTreeProvider> getSegmentatorCombo()
-    {
-        if (segmentatorCombo == null)
-        {
-            segmentatorCombo = new JComboBox<AreaTreeProvider>();
-            segmentatorCombo.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    AreaTreeProvider ap = (AreaTreeProvider) segmentatorCombo.getSelectedItem();
-                    if (ap != null)
-                        ((ParamsPanel) segmParamsPanel).setOperation(ap, null);
-                }
-            });
-            Vector<AreaTreeProvider> providers = new Vector<AreaTreeProvider>(browser.getProcessor().getAreaProviders().values());
-            DefaultComboBoxModel<AreaTreeProvider> model = new DefaultComboBoxModel<AreaTreeProvider>(providers);
-            segmentatorCombo.setModel(model);
-        }
-        return segmentatorCombo;
     }
 
     private JButton getSegmRunButton()
@@ -165,7 +131,7 @@ public class SegmentationPanel extends JPanel
                 public void actionPerformed(ActionEvent e)
                 {
                     if (operatorWindow == null)
-                        operatorWindow = new OperatorConfigWindow(browser.getProcessor());
+                        operatorWindow = new OperatorConfigWindow(getBrowser().getProcessor());
                     operatorWindow.pack();
                     operatorWindow.setVisible(true);
                 }
@@ -174,13 +140,4 @@ public class SegmentationPanel extends JPanel
         return btnOperators;
     }
     
-    private JPanel getSegmParamsPanel()
-    {
-        if (segmParamsPanel == null)
-        {
-            segmParamsPanel = new ParamsPanel();
-        }
-        return segmParamsPanel;
-    }
-
 }

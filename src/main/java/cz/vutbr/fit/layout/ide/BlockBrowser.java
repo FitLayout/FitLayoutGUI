@@ -5,18 +5,16 @@ package cz.vutbr.fit.layout.ide;
 
 import java.net.URL;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.vutbr.fit.layout.api.AreaTreeProvider;
-import cz.vutbr.fit.layout.api.BoxTreeProvider;
-import cz.vutbr.fit.layout.api.LogicalTreeProvider;
+import cz.vutbr.fit.layout.api.ArtifactService;
 import cz.vutbr.fit.layout.api.OutputDisplay;
 import cz.vutbr.fit.layout.api.ServiceManager;
 import cz.vutbr.fit.layout.gui.AreaSelectionListener;
@@ -26,12 +24,11 @@ import cz.vutbr.fit.layout.gui.CanvasClickListener;
 import cz.vutbr.fit.layout.gui.RectangleSelectionListener;
 import cz.vutbr.fit.layout.gui.TreeListener;
 import cz.vutbr.fit.layout.model.Area;
-import cz.vutbr.fit.layout.model.AreaTree;
+import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.model.Box;
-import cz.vutbr.fit.layout.model.LogicalAreaTree;
 import cz.vutbr.fit.layout.model.Page;
 import cz.vutbr.fit.layout.model.Rectangular;
-import cz.vutbr.fit.layout.model.Tag;
+import cz.vutbr.fit.layout.ontology.BOX;
 import cz.vutbr.fit.layout.process.GUIProcessor;
 
 import javax.swing.JSplitPane;
@@ -315,10 +312,15 @@ public class BlockBrowser implements Browser
     }
 
     @Override
-	public void setPage(Page page) 
+    public void addPage(Page page) 
     {
-    	proc.setPage(page);
-    	contentCanvas = createContentCanvas();
+        proc.addPage(page);
+        setCurrentPage(page);
+    }
+        
+	public void setCurrentPage(Page page) 
+    {
+    	contentCanvas = createContentCanvas(page);
         
         contentCanvas.addMouseListener(new MouseListener() {
             public void mouseClicked(MouseEvent e)
@@ -373,42 +375,15 @@ public class BlockBrowser implements Browser
         contentScroll.setViewportView(contentCanvas);
         
         refreshView();
-        notifyBoxTreeUpdate();
+        notifyBoxTreeUpdate(page);
 	}
 
 	@Override
-	public Page getPage() 
+	public List<Page> getPages() 
 	{
-		return proc.getPage();
+		return proc.getPages();
 	}
     
-    @Override
-    public AreaTree getAreaTree()
-    {
-        return proc.getAreaTree();
-    }
-
-    @Override
-    public LogicalAreaTree getLogicalTree()
-    {
-        return proc.getLogicalAreaTree();
-    }
-
-    @Override
-    public void setAreaTree(AreaTree areaTree)
-    {
-        proc.setAreaTree(areaTree);
-        updateTagLists(areaTree);
-        notifyAreaTreeUpdate();
-    }
-
-    @Override
-    public void setLogicalTree(LogicalAreaTree logicalTree)
-    {
-        proc.setLogicalAreaTree(logicalTree);
-        notifyLogicalAreaTreeUpdate();
-    }
-
     public GUIProcessor getProcessor()
     {
         return proc;
@@ -480,38 +455,78 @@ public class BlockBrowser implements Browser
     
     //=============================================================================================================
     
-    public void renderPage(BoxTreeProvider btp, Map<String, Object> params)
+    /**
+     * Renders a new page using a configured provider and adds the page to the browser.
+     * @param provider the provider to use for creating the page artifact
+     * @param params the provider params
+     * @return the new page added or {@code null} when the page could not be rendered
+     */
+    public Page renderPage(ArtifactService provider, Map<String, Object> params)
     {
-        Page page = proc.renderPage(btp, params);
-        setPage(page);
+        if (provider.getProduces() == BOX.Page)
+        {
+            Page ret = (Page) proc.processArtifact(null, provider, params);
+            addPage(ret);
+            return ret;
+        }
+        else
+        {
+            log.error("Trying to use provider {} for rendering the page but it produces {}", provider.getId(), provider.getProduces());
+            return null;
+        }
     }
     
     /**
-     * Segments the page using the chosen provider and parametres.
+     * Creates a new artifact from the nearest applicable parent using the given provider
+     * and adds the new artifact to the artifact tree.
+     * @param provider
+     * @return
      */
-    public void segmentPage(AreaTreeProvider provider)
+    public Artifact createAndAddArtifact(ArtifactService provider)
     {
-        proc.segmentPage(provider, null); //the parametres should have been set through the GUI
-        setAreaTree(proc.getAreaTree());
+        Artifact parent = null;
+        if (provider.getConsumes() != null)
+            parent = getNearestArtifact(provider.getConsumes());
+        Artifact result = provider.process(parent);
+        //TODO add the result
+        return null;
     }
     
     /**
-     * Builds the logical tree the chosen provider and parametres.
+     * Finds the nearest artifact of the given type in the artifact tree.
+     * @param artifactType
+     * @return
      */
-    public void buildLogicalTree(LogicalTreeProvider provider)
+    public Artifact getNearestArtifact(IRI artifactType)
     {
-        proc.buildLogicalTree(provider, null); //the parametres should have been set through the GUI
-        setLogicalTree(proc.getLogicalAreaTree());
+        //TODO
+        return null;
+    }
+    
+    @Override
+    public Artifact getSelectedArtifact()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Page getSelectedPage()
+    {
+        Artifact a = getSelectedArtifact();
+        while (a != null && !(a instanceof Page))
+            a = a.getParent();
+        return (Page) a;
     }
     
     //=============================================================================================================
     
     /** Creates the appropriate canvas based on the file type */
-    private JPanel createContentCanvas()
+    private JPanel createContentCanvas(Page page)
     {
         if (contentCanvas != null)
         {
-            contentCanvas = new BrowserPanel(proc.getPage());
+            contentCanvas = new BrowserPanel(page);
             contentCanvas.setLayout(null);
             selection = new Selection();
             contentCanvas.add(selection);
@@ -679,22 +694,10 @@ public class BlockBrowser implements Browser
             listener.areaSelected(area);
     }
     
-    private void notifyBoxTreeUpdate()
+    private void notifyBoxTreeUpdate(Page page)
     {
         for (TreeListener listener : treeListeners)
-            listener.pageRendered(getPage());
-    }
-    
-    private void notifyAreaTreeUpdate()
-    {
-        for (TreeListener listener : treeListeners)
-            listener.areaTreeUpdated(getAreaTree());
-    }
-    
-    private void notifyLogicalAreaTreeUpdate()
-    {
-        for (TreeListener listener : treeListeners)
-            listener.logicalAreaTreeUpdated(getLogicalTree());
+            listener.pageRendered(page);
     }
     
     public Set<String> getTagTypes()
@@ -707,24 +710,6 @@ public class BlockBrowser implements Browser
         return tagNames;
     }
 
-    private void updateTagLists(AreaTree tree)
-    {
-        tagNames = new HashSet<String>();
-        tagTypes = new HashSet<String>();
-        recursiveUpdateTagLists(tree.getRoot());
-    }
-    
-    private void recursiveUpdateTagLists(Area root)
-    {
-        for (Tag tag : root.getTags().keySet())
-        {
-            tagNames.add(tag.getValue());
-            tagTypes.add(tag.getType());
-        }
-        for (int i = 0; i < root.getChildCount(); i++)
-            recursiveUpdateTagLists(root.getChildAt(i));
-    }
-    
     //===========================================================================
     
     public void initPlugins()

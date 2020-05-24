@@ -82,7 +82,7 @@ public class BoxTreeTab extends BrowserTabBase implements CanvasClickListener
     public void refreshView()
     {
         //reloads the box tree from the processor
-        boxTree.setModel(new BoxTreeModel(browser.getProcessor().getPage().getRoot()));
+        boxTree.setModel(new BoxTreeModel(browser.getSelectedPage().getRoot()));
     }
 
     @Override
@@ -90,7 +90,7 @@ public class BoxTreeTab extends BrowserTabBase implements CanvasClickListener
     {
         if (isActive())
         {
-            Box node = browser.getPage().getBoxAt(x, y);
+            Box node = browser.getSelectedPage().getBoxAt(x, y);
             if (node != null)
                 showBoxInTree(node);
         }
