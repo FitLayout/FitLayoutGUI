@@ -166,7 +166,6 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
         return cols;
     }
     
-    
     //==================================================================================
     
     private JPanel createViewPanel()

@@ -842,6 +842,7 @@ public class BlockBrowser implements Browser
         addTab(segmentationTab, true, true);
         //add artifact views
         addArtifactView(new PageView(this));
+        addArtifactView(new AreaTreeView(this));
     }
     
     //===========================================================================
@@ -1038,7 +1039,6 @@ public class BlockBrowser implements Browser
         {
             mainSplitter = new JSplitPane();
             mainSplitter.setDividerLocation(250);
-            //mainSplitter.setLeftComponent(new JPanel()); //TODO move to artifact view
             mainSplitter.setLeftComponent(getArtifactTreePanel());
             mainSplitter.setRightComponent(getInfoSplitter());
         }
@@ -1343,8 +1343,7 @@ public class BlockBrowser implements Browser
             artifactViewTabs = new JTabbedPane(JTabbedPane.TOP);
             artifactViewTabs.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
-                    System.out.println("Tab: " + toolTabs.getSelectedIndex());
-                    viewTabSelected(toolTabs.getSelectedIndex());
+                    viewTabSelected(artifactViewTabs.getSelectedIndex());
                 }
             });
         }
