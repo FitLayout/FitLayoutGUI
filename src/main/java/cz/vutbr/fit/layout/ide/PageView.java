@@ -1,11 +1,10 @@
 /**
- * BoxTreeTab.java
+ * PageView.java
  *
- * Created on 21. 4. 2020, 23:40:03 by burgetr
+ * Created on 24. 5. 2020, 18:09:14 by burgetr
  */
 package cz.vutbr.fit.layout.ide;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -14,39 +13,48 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreePath;
 
+import org.eclipse.rdf4j.model.IRI;
+
 import cz.vutbr.fit.layout.gui.CanvasClickListener;
+import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.model.Box;
+import cz.vutbr.fit.layout.model.Page;
+import cz.vutbr.fit.layout.ontology.BOX;
 
 /**
- * A composition of the box sources panel and the corresponding gui parts.
  * 
  * @author burgetr
  */
-public class BoxTreeTab extends BrowserTabBase implements CanvasClickListener
+public class PageView extends ArtifactViewBase implements CanvasClickListener
 {
-    private BoxSourcePanel boxSourcePanel;
-    private JPanel structurePanel;
-    private JPanel propertiesPanel;
     private JTree boxTree;
     private JTable infoTable;
+    private JPanel boxTreePanel;
+    private JPanel propertiesPanel;
+    private JPanel viewPanel;
     
-    
-    public BoxTreeTab(BlockBrowser browser)
+    private Page currentPage;
+
+
+    public PageView(BlockBrowser browser)
     {
         super(browser);
-        boxSourcePanel = new BoxSourcePanel(browser);
-        structurePanel = createStructurePanel();
-        propertiesPanel = createPropertiesPanel();
-        
-
+        viewPanel = createViewPanel();
+        browser.addCanvasClickListener(null, this, false);
     }
-    
+
+    @Override
+    public IRI getArtifactType()
+    {
+        return BOX.Page;
+    }
+
     @Override
     public String getTitle()
     {
@@ -54,42 +62,29 @@ public class BoxTreeTab extends BrowserTabBase implements CanvasClickListener
     }
 
     @Override
-    public JPanel getStructurePanel()
+    public JPanel getViewPanel()
     {
-        return structurePanel;
+        return viewPanel;
     }
 
     @Override
-    public JPanel getPropertiesPanel()
+    public void show(Artifact artifact)
     {
-        return propertiesPanel;
-    }
-
-    @Override
-    public JPanel getTabPanel()
-    {
-        return boxSourcePanel;
+        if (artifact instanceof Page)
+        {
+            currentPage = (Page) artifact;
+            boxTree.setModel(new BoxTreeModel(currentPage.getRoot()));
+        }
     }
     
-    @Override
-    public void reloadServiceParams()
-    {
-        boxSourcePanel.reloadServiceParams();
-    }
+    //=================================================================================================
     
-    @Override
-    public void refreshView()
-    {
-        //reloads the box tree from the processor
-        //boxTree.setModel(new BoxTreeModel(browser.getSelectedPage().getRoot()));
-    }
-
     @Override
     public void canvasClicked(int x, int y)
     {
         if (isActive())
         {
-            Box node = browser.getSelectedPage().getBoxAt(x, y);
+            Box node = currentPage.getBoxAt(x, y);
             if (node != null)
                 showBoxInTree(node);
         }
@@ -171,24 +166,24 @@ public class BoxTreeTab extends BrowserTabBase implements CanvasClickListener
         return cols;
     }
     
-    //=================================================================================================
     
-    private JPanel createStructurePanel()
+    //==================================================================================
+    
+    private JPanel createViewPanel()
     {
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.setRows(1);
-        JPanel structurePanel = new JPanel();
-        structurePanel.setPreferredSize(new Dimension(200, 408));
-        structurePanel.setLayout(gridLayout);
-        structurePanel.add(createSidebarPane(), null);
-        return structurePanel;
-    }
-
-    private JTabbedPane createSidebarPane()
-    {
-        JTabbedPane sidebarPane = new JTabbedPane();
-        sidebarPane.addTab("Box tree", null, createBoxTreePanel(), null);
-        return sidebarPane;
+        JPanel ret = new JPanel();
+        ret.setLayout(new GridLayout(1, 1));
+        
+        boxTreePanel = createBoxTreePanel();
+        propertiesPanel = createPropertiesPanel();
+        
+        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        split.setTopComponent(boxTreePanel);
+        split.setBottomComponent(propertiesPanel);
+        ret.add(split);
+        split.setDividerLocation(500);
+        
+        return ret;
     }
 
     private JPanel createBoxTreePanel()
@@ -225,8 +220,6 @@ public class BoxTreeTab extends BrowserTabBase implements CanvasClickListener
         return boxTree;
     }
 
-    //=================================================================================================
-    
     private JPanel createPropertiesPanel()
     {
         GridBagConstraints gbc = new GridBagConstraints();
@@ -259,4 +252,5 @@ public class BoxTreeTab extends BrowserTabBase implements CanvasClickListener
         return infoTable;
     }
 
+    
 }

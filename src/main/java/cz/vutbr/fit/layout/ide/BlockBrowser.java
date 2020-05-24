@@ -4,6 +4,7 @@
 package cz.vutbr.fit.layout.ide;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,6 +50,9 @@ import java.awt.GridLayout;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -77,6 +81,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
 
 /**
  * @author burgetr
@@ -93,6 +100,7 @@ public class BlockBrowser implements Browser
     
     private GUIProcessor proc;
     private URL currentUrl = null;
+    private Page currentPage;
     private boolean rectSelection = false; //rectangle area selection in progress
     private int rectX1, rectY1; //rectangle selection start point
     private Selection selection; //selection box
@@ -109,6 +117,13 @@ public class BlockBrowser implements Browser
     private List<BrowserTabState> browserTabs;
     private BoxTreeTab boxTreeTab;
     private SegmentationTab segmentationTab;
+    
+    //artifact tree
+    private DefaultMutableTreeNode artifactTreeRoot;
+    
+    //artifact views
+    private Map<IRI, List<ArtifactView>> artifactViews; //registered views
+    private List<ArtifactView> currentArtifactViews; //currently open views
 
     //basic UI components
     private JFrame mainWindow = null;  //  @jve:decl-index=0:visual-constraint="-239,28"
@@ -132,13 +147,17 @@ public class BlockBrowser implements Browser
     private JButton showArtAreaButton = null;
     private JButton showColumnsButton = null;
     private JTabbedPane toolTabs = null;
+    private List<JCheckBoxMenuItem> tabViewItems;
+    private JPanel artifactTreePanel;
+    private JScrollPane artifactTreeScroll;
+    private JTree artifactTree;
     
     //menu
     private JMenuBar menuBar;
     private JMenu mnFile;
     private JMenuItem mntmQuit;
     private JMenu mnView;
-    private List<JCheckBoxMenuItem> tabViewItems;
+    private JTabbedPane artifactViewTabs;
 
 
     public BlockBrowser()
@@ -150,6 +169,7 @@ public class BlockBrowser implements Browser
         canvasClickToggleListeners = new HashMap<>();
         browserTabs = new LinkedList<>();
         tabViewItems = new LinkedList<>();
+        artifactViews = new HashMap<>();
         proc = new GUIProcessor() {
             @Override
             protected void treesCompleted()
@@ -315,11 +335,33 @@ public class BlockBrowser implements Browser
     public void addPage(Page page) 
     {
         proc.addPage(page);
-        setCurrentPage(page);
+        var node = new DefaultMutableTreeNode(page);
+        artifactTreeRoot.add(node);
+        ((DefaultTreeModel) artifactTree.getModel()).reload();
+        //setCurrentPage(page);
+        artifactTree.setSelectionPath(new TreePath(node.getPath()));
+    }
+    
+    /**
+     * Adds a new artifact to the tree.
+     * @param artifact
+     * @param parent
+     */
+    public void addArtifact(Artifact artifact, Artifact parent)
+    {
+        var pnode = findNodeWithArtifact(parent, artifactTreeRoot);
+        if (pnode != null)
+        {
+            var node = new DefaultMutableTreeNode(artifact);
+            pnode.add(node);
+            ((DefaultTreeModel) artifactTree.getModel()).reload();
+            artifactTree.setSelectionPath(new TreePath(node.getPath()));
+        }
     }
         
 	public void setCurrentPage(Page page) 
     {
+	    currentPage = page;
     	contentCanvas = createContentCanvas(page);
         
         contentCanvas.addMouseListener(new MouseListener() {
@@ -442,15 +484,54 @@ public class BlockBrowser implements Browser
         BrowserTab tab = browserTabs.get(index).getBrowserTab();
         if (tab != null)
         {
-            int mpos = getMainSplitter().getDividerLocation();
+            /*int mpos = getMainSplitter().getDividerLocation();
             int ipos = getInfoSplitter().getDividerLocation();
             getMainSplitter().setLeftComponent(tab.getStructurePanel());
             getInfoSplitter().setRightComponent(tab.getPropertiesPanel());
             getMainSplitter().setDividerLocation(mpos);
-            getInfoSplitter().setDividerLocation(ipos);
+            getInfoSplitter().setDividerLocation(ipos);*/
         }
         for (int i = 0; i < browserTabs.size(); i++)
             browserTabs.get(i).getBrowserTab().setActive(i == index);
+    }
+    
+    public void addArtifactView(ArtifactView view)
+    {
+        List<ArtifactView> list = artifactViews.get(view.getArtifactType());
+        if (list == null)
+        {
+            list = new ArrayList<>();
+            artifactViews.put(view.getArtifactType(), list);
+        }
+        list.add(view);
+    }
+    
+    public void selectArtifact(Artifact a)
+    {
+        //change current page if changed
+        if (getSelectedPage() != currentPage)
+            setCurrentPage(getSelectedPage());
+        //show in the tab view
+        artifactViewTabs.removeAll();
+        List<ArtifactView> views = artifactViews.get(a.getArtifactType());
+        if (views != null)
+        {
+            currentArtifactViews = views;
+            for (ArtifactView view : views)
+            {
+                artifactViewTabs.add(view.getTitle(), view.getViewPanel());
+                view.show(a);
+            }
+        }
+    }
+    
+    private void viewTabSelected(int index)
+    {
+        if (currentArtifactViews != null)
+        {
+            for (int i = 0; i < currentArtifactViews.size(); i++)
+                currentArtifactViews.get(i).setActive(i == index);
+        }
     }
     
     //=============================================================================================================
@@ -487,9 +568,14 @@ public class BlockBrowser implements Browser
         Artifact parent = null;
         if (provider.getConsumes() != null)
             parent = getNearestArtifact(provider.getConsumes());
-        Artifact result = provider.process(parent);
-        //TODO add the result
-        return null;
+        if (parent != null)
+        {
+            Artifact result = provider.process(parent);
+            addArtifact(result, parent);
+            return result;
+        }
+        else
+            return null;
     }
     
     /**
@@ -499,15 +585,20 @@ public class BlockBrowser implements Browser
      */
     public Artifact getNearestArtifact(IRI artifactType)
     {
-        //TODO
-        return null;
+        Artifact ret = getSelectedArtifact();
+        while (ret != null && !artifactType.equals(ret.getArtifactType()))
+            ret = ret.getParent();
+        return ret;
     }
     
     @Override
     public Artifact getSelectedArtifact()
     {
-        // TODO Auto-generated method stub
-        return null;
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) artifactTree.getLastSelectedPathComponent();
+        if (node != null && node.getUserObject() != null)
+            return (Artifact) node.getUserObject();
+        else
+            return null;
     }
 
     @Override
@@ -517,6 +608,24 @@ public class BlockBrowser implements Browser
         while (a != null && !(a instanceof Page))
             a = a.getParent();
         return (Page) a;
+    }
+    
+    private DefaultMutableTreeNode findNodeWithArtifact(Artifact artifact, DefaultMutableTreeNode root)
+    {
+        if (root.getUserObject() == artifact)
+        {
+            return root;
+        }
+        else
+        {
+            for (int i = 0; i < root.getChildCount(); i++)
+            {
+                DefaultMutableTreeNode ret = findNodeWithArtifact(artifact, (DefaultMutableTreeNode) root.getChildAt(i));
+                if (ret != null)
+                    return ret;
+            }
+            return null;
+        }
     }
     
     //=============================================================================================================
@@ -731,6 +840,8 @@ public class BlockBrowser implements Browser
         addTab(boxTreeTab, false, true);
         segmentationTab = new SegmentationTab(this);
         addTab(segmentationTab, true, true);
+        //add artifact views
+        addArtifactView(new PageView(this));
     }
     
     //===========================================================================
@@ -792,6 +903,7 @@ public class BlockBrowser implements Browser
             gridBagConstraints11.gridx = 0;
             gridBagConstraints11.weightx = 1.0;
             GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
+            gridBagConstraints3.insets = new Insets(0, 0, 5, 0);
             gridBagConstraints3.gridx = 0;
             gridBagConstraints3.weightx = 1.0;
             gridBagConstraints3.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -799,6 +911,8 @@ public class BlockBrowser implements Browser
             gridBagConstraints3.gridy = 2;
             mainPanel = new JPanel();
             GridBagLayout gbl_mainPanel = new GridBagLayout();
+            gbl_mainPanel.rowWeights = new double[]{0.0, 0.0, 0.0};
+            gbl_mainPanel.columnWeights = new double[]{1.0};
             mainPanel.setLayout(gbl_mainPanel);
             GridBagConstraints gbc_toolTabs = new GridBagConstraints();
             gbc_toolTabs.fill = GridBagConstraints.HORIZONTAL;
@@ -924,7 +1038,8 @@ public class BlockBrowser implements Browser
         {
             mainSplitter = new JSplitPane();
             mainSplitter.setDividerLocation(250);
-            mainSplitter.setLeftComponent(new JPanel());
+            //mainSplitter.setLeftComponent(new JPanel()); //TODO move to artifact view
+            mainSplitter.setLeftComponent(getArtifactTreePanel());
             mainSplitter.setRightComponent(getInfoSplitter());
         }
         return mainSplitter;
@@ -1101,9 +1216,12 @@ public class BlockBrowser implements Browser
         {
             infoSplitter = new JSplitPane();
             infoSplitter.setResizeWeight(1.0);
-            infoSplitter.setDividerLocation(1050);
-            infoSplitter.setLeftComponent(getContentPanel());
-            infoSplitter.setRightComponent(new JPanel());
+            infoSplitter.setDividerLocation(250);
+            JPanel artifactViewPanel = new JPanel();
+            infoSplitter.setLeftComponent(artifactViewPanel);
+            artifactViewPanel.setLayout(new GridLayout(1, 1, 0, 0));
+            artifactViewPanel.add(getArtifactViewTabs());
+            infoSplitter.setRightComponent(getContentPanel());
         }
         return infoSplitter;
     }
@@ -1171,12 +1289,66 @@ public class BlockBrowser implements Browser
             toolTabs = new JTabbedPane(JTabbedPane.TOP);
             toolTabs.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
-                    System.out.println("Tab: " + toolTabs.getSelectedIndex());
                     tabSelected(toolTabs.getSelectedIndex());
                 }
             });
         }
         return toolTabs;
+    }
+
+    private JPanel getArtifactTreePanel()
+    {
+        if (artifactTreePanel == null)
+        {
+            artifactTreePanel = new JPanel();
+            artifactTreePanel.setLayout(new GridLayout(0, 1, 0, 0));
+            artifactTreePanel.add(getArtifactTreeScroll());
+        }
+        return artifactTreePanel;
+    }
+
+    private JScrollPane getArtifactTreeScroll()
+    {
+        if (artifactTreeScroll == null)
+        {
+            artifactTreeScroll = new JScrollPane();
+            artifactTreeScroll.setViewportView(getArtifactTree());
+        }
+        return artifactTreeScroll;
+    }
+
+    private JTree getArtifactTree()
+    {
+        if (artifactTree == null)
+        {
+            artifactTreeRoot = new DefaultMutableTreeNode("Pages");
+            artifactTree = new JTree(artifactTreeRoot);
+            artifactTree.addTreeSelectionListener(new TreeSelectionListener()
+            {
+                public void valueChanged(TreeSelectionEvent e)
+                {
+                    Artifact a = getSelectedArtifact();
+                    if (a != null)
+                        selectArtifact(a);
+                }
+            });
+        }
+        return artifactTree;
+    }
+    
+    private JTabbedPane getArtifactViewTabs()
+    {
+        if (artifactViewTabs == null)
+        {
+            artifactViewTabs = new JTabbedPane(JTabbedPane.TOP);
+            artifactViewTabs.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e) {
+                    System.out.println("Tab: " + toolTabs.getSelectedIndex());
+                    viewTabSelected(toolTabs.getSelectedIndex());
+                }
+            });
+        }
+        return artifactViewTabs;
     }
 
     private JMenuBar getMenuBar()
@@ -1273,5 +1445,4 @@ public class BlockBrowser implements Browser
         });
         
     }
-
 }
