@@ -212,10 +212,7 @@ public class BlockBrowser implements Browser
     @Override
     public void refreshView()
     {
-        for (BrowserTabState tab : browserTabs)
-        {
-            tab.getBrowserTab().refreshView();
-        }
+        //TODO
     }
     
     @Override

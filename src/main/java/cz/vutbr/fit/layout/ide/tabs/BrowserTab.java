@@ -29,30 +29,11 @@ public interface BrowserTab
     public JPanel getTabPanel();
     
     /**
-     * Gets the structure panel (to be displayed in the left column)
-     * 
-     * @return the structure panel
-     */
-    public JPanel getStructurePanel();
-    
-    /**
-     * Gets the properties panel (to be displayed in the right column)
-     * 
-     * @return the properties panel
-     */
-    public JPanel getPropertiesPanel();
-    
-    /**
      * Sets the status of the tab to active/inactive.
      * 
      * @param active
      */
     public void setActive(boolean active);
-    
-    /**
-     * Reload the model (e.g. the underlying tree)
-     */
-    public void refreshView();
     
     /**
      * Reloads the values of the service parametres in the configuration dialogs (if any)

@@ -316,7 +316,6 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
         }
         return ret;
     }
-
     
     //=================================================================================================
     
