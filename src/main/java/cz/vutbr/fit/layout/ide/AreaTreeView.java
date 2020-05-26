@@ -5,13 +5,13 @@
  */
 package cz.vutbr.fit.layout.ide;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -27,6 +27,7 @@ import javax.swing.tree.TreePath;
 import org.eclipse.rdf4j.model.IRI;
 
 import cz.vutbr.fit.layout.gui.CanvasClickListener;
+import cz.vutbr.fit.layout.ide.misc.ArtifactTreeCellRenderer;
 import cz.vutbr.fit.layout.impl.DefaultTag;
 import cz.vutbr.fit.layout.model.Area;
 import cz.vutbr.fit.layout.model.AreaTree;
@@ -40,6 +41,7 @@ import cz.vutbr.fit.layout.ontology.SEGM;
  */
 public class AreaTreeView extends ArtifactViewBase implements CanvasClickListener
 {
+    private static final Color BGCOLOR = new Color(255, 225, 225);
     public static final float TAG_PROBABILITY_THRESHOLD = 0.3f; 
 
     private JPanel structurePanel;
@@ -352,6 +354,7 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
         areaTreePanel.setLayout(gridLayout4);
         
         JScrollPane areaTreeScroll = new JScrollPane();
+        areaTreeScroll.setBackground(BGCOLOR);
         areaTreeScroll.setViewportView(getAreaJTree());
 
         areaTreePanel.add(areaTreeScroll, null);
@@ -363,6 +366,8 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
         if (areaJTree == null)
         {
             areaJTree = new JTree();
+            areaJTree.setCellRenderer(new ArtifactTreeCellRenderer());
+            areaJTree.setBackground(BGCOLOR);
             areaJTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener()
             {
                 public void valueChanged(javax.swing.event.TreeSelectionEvent e)

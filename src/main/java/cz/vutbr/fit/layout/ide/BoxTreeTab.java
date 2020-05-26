@@ -43,14 +43,12 @@ public class BoxTreeTab extends BrowserTabBase implements CanvasClickListener
         boxSourcePanel = new BoxSourcePanel(browser);
         structurePanel = createStructurePanel();
         propertiesPanel = createPropertiesPanel();
-        
-
     }
     
     @Override
     public String getTitle()
     {
-        return "Box tree";
+        return "Rendering";
     }
 
     @Override

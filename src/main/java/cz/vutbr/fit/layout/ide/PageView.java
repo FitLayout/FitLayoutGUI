@@ -5,6 +5,7 @@
  */
 package cz.vutbr.fit.layout.ide;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -22,6 +23,7 @@ import javax.swing.tree.TreePath;
 import org.eclipse.rdf4j.model.IRI;
 
 import cz.vutbr.fit.layout.gui.CanvasClickListener;
+import cz.vutbr.fit.layout.ide.misc.ArtifactTreeCellRenderer;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.model.Box;
 import cz.vutbr.fit.layout.model.Page;
@@ -33,6 +35,8 @@ import cz.vutbr.fit.layout.ontology.BOX;
  */
 public class PageView extends ArtifactViewBase implements CanvasClickListener
 {
+    private static final Color BGCOLOR = new Color(225, 255, 225);
+    
     private JTree boxTree;
     private JTable infoTable;
     private JPanel boxTreePanel;
@@ -190,10 +194,12 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
         GridLayout layout = new GridLayout();
         layout.setRows(1);
         JPanel boxTreePanel = new JPanel();
+        boxTreePanel.setBackground(BGCOLOR);
         boxTreePanel.setLayout(layout);
         
         JScrollPane boxTreeScroll = new JScrollPane();
         boxTreeScroll.setViewportView(getBoxTree());
+        boxTreeScroll.setBackground(BGCOLOR);
         boxTreePanel.add(boxTreeScroll, null);
         
         return boxTreePanel;
@@ -204,6 +210,8 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
         if (boxTree == null)
         {
             boxTree = new JTree();
+            boxTree.setBackground(BGCOLOR);
+            boxTree.setCellRenderer(new ArtifactTreeCellRenderer());
             boxTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener()
             {
                 public void valueChanged(javax.swing.event.TreeSelectionEvent e)
