@@ -3,7 +3,7 @@
  *
  * Created on 24. 5. 2020, 22:51:15 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.views;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -27,6 +27,9 @@ import javax.swing.tree.TreePath;
 import org.eclipse.rdf4j.model.IRI;
 
 import cz.vutbr.fit.layout.gui.CanvasClickListener;
+import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Utils;
+import cz.vutbr.fit.layout.ide.misc.AreaTreeModel;
 import cz.vutbr.fit.layout.ide.misc.ArtifactTreeCellRenderer;
 import cz.vutbr.fit.layout.impl.DefaultTag;
 import cz.vutbr.fit.layout.model.Area;

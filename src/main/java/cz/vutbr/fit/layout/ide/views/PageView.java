@@ -3,7 +3,7 @@
  *
  * Created on 24. 5. 2020, 18:09:14 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.views;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -23,7 +23,10 @@ import javax.swing.tree.TreePath;
 import org.eclipse.rdf4j.model.IRI;
 
 import cz.vutbr.fit.layout.gui.CanvasClickListener;
+import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Utils;
 import cz.vutbr.fit.layout.ide.misc.ArtifactTreeCellRenderer;
+import cz.vutbr.fit.layout.ide.misc.BoxTreeModel;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.model.Box;
 import cz.vutbr.fit.layout.model.Page;

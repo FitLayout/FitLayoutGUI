@@ -3,7 +3,7 @@
  *
  * Created on 4.9.2007, 13:57:43 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.tabs;
 
 import java.awt.Dimension;
 import java.awt.Graphics;

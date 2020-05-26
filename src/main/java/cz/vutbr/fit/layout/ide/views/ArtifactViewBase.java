@@ -1,21 +1,23 @@
 /**
- * BrowserTabBase.java
+ * ArtifactViewBase.java
  *
- * Created on 22. 4. 2020, 20:32:50 by burgetr
+ * Created on 24. 5. 2020, 18:12:53 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.views;
+
+import cz.vutbr.fit.layout.ide.BlockBrowser;
 
 /**
  * 
  * @author burgetr
  */
-public abstract class BrowserTabBase implements BrowserTab
+public abstract class ArtifactViewBase implements ArtifactView
 {
     protected BlockBrowser browser;
     private boolean active;
 
     
-    public BrowserTabBase(BlockBrowser browser)
+    public ArtifactViewBase(BlockBrowser browser)
     {
         this.browser = browser;
     }

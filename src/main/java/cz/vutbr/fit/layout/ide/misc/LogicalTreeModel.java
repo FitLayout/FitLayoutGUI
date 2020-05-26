@@ -1,25 +1,25 @@
 /**
- * BoxTreeModel.java
+ * LogicalTreeModel.java
  *
- * Created on 13. 11. 2014, 12:53:32 by burgetr
+ * Created on 19. 3. 2015, 21:49:29 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.misc;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import cz.vutbr.fit.layout.model.Box;
+import cz.vutbr.fit.layout.model.LogicalArea;
 
 /**
  * 
  * @author burgetr
  */
-public class BoxTreeModel implements TreeModel
+public class LogicalTreeModel implements TreeModel
 {
-    private Box root;
-    
-    public BoxTreeModel(Box root)
+    private LogicalArea root;
+
+    public LogicalTreeModel(LogicalArea root)
     {
         this.root = root;
     }
@@ -33,19 +33,19 @@ public class BoxTreeModel implements TreeModel
     @Override
     public Object getChild(Object parent, int index)
     {
-        return ((Box) parent).getChildAt(index);
+        return ((LogicalArea) parent).getChildAt(index);
     }
 
     @Override
     public int getChildCount(Object parent)
     {
-        return ((Box) parent).getChildCount();
+        return ((LogicalArea) parent).getChildCount();
     }
 
     @Override
     public boolean isLeaf(Object node)
     {
-        return ((Box) node).getChildCount() == 0;
+        return ((LogicalArea) node).isLeaf();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class BoxTreeModel implements TreeModel
     @Override
     public int getIndexOfChild(Object parent, Object child)
     {
-        Box p = (Box) parent;
+        LogicalArea p = (LogicalArea) parent;
         for (int i = 0; i < p.getChildCount(); i++)
         {
             if (p.getChildAt(i) == child)
@@ -77,5 +77,6 @@ public class BoxTreeModel implements TreeModel
     {
 
     }
+
 
 }

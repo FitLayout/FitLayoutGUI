@@ -1,25 +1,25 @@
 /**
- * LogicalTreeModel.java
+ * AreaTreeModel.java
  *
- * Created on 19. 3. 2015, 21:49:29 by burgetr
+ * Created on 13. 11. 2014, 12:59:26 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.misc;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import cz.vutbr.fit.layout.model.LogicalArea;
+import cz.vutbr.fit.layout.model.Area;
 
 /**
  * 
  * @author burgetr
  */
-public class LogicalTreeModel implements TreeModel
+public class AreaTreeModel implements TreeModel
 {
-    private LogicalArea root;
+    private Area root;
 
-    public LogicalTreeModel(LogicalArea root)
+    public AreaTreeModel(Area root)
     {
         this.root = root;
     }
@@ -33,19 +33,19 @@ public class LogicalTreeModel implements TreeModel
     @Override
     public Object getChild(Object parent, int index)
     {
-        return ((LogicalArea) parent).getChildAt(index);
+        return ((Area) parent).getChildAt(index);
     }
 
     @Override
     public int getChildCount(Object parent)
     {
-        return ((LogicalArea) parent).getChildCount();
+        return ((Area) parent).getChildCount();
     }
 
     @Override
     public boolean isLeaf(Object node)
     {
-        return ((LogicalArea) node).isLeaf();
+        return ((Area) node).isLeaf();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class LogicalTreeModel implements TreeModel
     @Override
     public int getIndexOfChild(Object parent, Object child)
     {
-        LogicalArea p = (LogicalArea) parent;
+        Area p = (Area) parent;
         for (int i = 0; i < p.getChildCount(); i++)
         {
             if (p.getChildAt(i) == child)
@@ -77,6 +77,5 @@ public class LogicalTreeModel implements TreeModel
     {
 
     }
-
 
 }

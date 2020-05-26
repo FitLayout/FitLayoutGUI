@@ -1,4 +1,4 @@
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.tabs;
 
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -13,6 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import cz.vutbr.fit.layout.api.ArtifactService;
+import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.views.ArtifactProviderPanel;
 import cz.vutbr.fit.layout.impl.DefaultContentRect;
 import cz.vutbr.fit.layout.ontology.SEGM;
 

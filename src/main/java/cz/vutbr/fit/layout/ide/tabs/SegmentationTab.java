@@ -3,7 +3,7 @@
  *
  * Created on 22. 4. 2020, 16:25:23 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.tabs;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -25,6 +25,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreePath;
 
 import cz.vutbr.fit.layout.gui.CanvasClickListener;
+import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Utils;
+import cz.vutbr.fit.layout.ide.misc.AreaTreeModel;
 import cz.vutbr.fit.layout.impl.DefaultTag;
 import cz.vutbr.fit.layout.model.Area;
 import cz.vutbr.fit.layout.model.Tag;

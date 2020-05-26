@@ -1,4 +1,4 @@
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.tabs;
 
 import java.awt.Component;
 import java.awt.Dimension;

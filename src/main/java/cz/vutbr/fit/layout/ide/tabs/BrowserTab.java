@@ -3,7 +3,7 @@
  *
  * Created on 22. 4. 2020, 15:48:45 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.tabs;
 
 import javax.swing.JPanel;
 

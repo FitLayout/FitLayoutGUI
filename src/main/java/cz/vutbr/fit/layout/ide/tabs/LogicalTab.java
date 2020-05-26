@@ -3,7 +3,7 @@
  *
  * Created on 22. 4. 2020, 18:51:35 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.tabs;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -13,6 +13,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
+import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.misc.LogicalTreeModel;
 import cz.vutbr.fit.layout.model.Area;
 import cz.vutbr.fit.layout.model.LogicalArea;
 

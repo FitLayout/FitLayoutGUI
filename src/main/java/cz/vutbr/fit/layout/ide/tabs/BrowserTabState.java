@@ -3,7 +3,7 @@
  *
  * Created on 15. 5. 2020, 22:06:38 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.tabs;
 
 /**
  * This class summarizes the state of a browser tab.

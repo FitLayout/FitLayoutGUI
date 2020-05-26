@@ -3,7 +3,7 @@
  *
  * Created on 23. 5. 2020, 18:13:25 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.views;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +17,8 @@ import org.eclipse.rdf4j.model.IRI;
 
 import cz.vutbr.fit.layout.api.ArtifactService;
 import cz.vutbr.fit.layout.api.ParametrizedOperation;
+import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.tabs.ParamsPanel;
 
 /**
  * A base class for panels that control a kind of ArtifactService that provides certain type

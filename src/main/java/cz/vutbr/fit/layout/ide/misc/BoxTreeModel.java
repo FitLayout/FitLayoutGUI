@@ -1,25 +1,25 @@
 /**
- * AreaTreeModel.java
+ * BoxTreeModel.java
  *
- * Created on 13. 11. 2014, 12:59:26 by burgetr
+ * Created on 13. 11. 2014, 12:53:32 by burgetr
  */
-package cz.vutbr.fit.layout.ide;
+package cz.vutbr.fit.layout.ide.misc;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import cz.vutbr.fit.layout.model.Area;
+import cz.vutbr.fit.layout.model.Box;
 
 /**
  * 
  * @author burgetr
  */
-public class AreaTreeModel implements TreeModel
+public class BoxTreeModel implements TreeModel
 {
-    private Area root;
-
-    public AreaTreeModel(Area root)
+    private Box root;
+    
+    public BoxTreeModel(Box root)
     {
         this.root = root;
     }
@@ -33,19 +33,19 @@ public class AreaTreeModel implements TreeModel
     @Override
     public Object getChild(Object parent, int index)
     {
-        return ((Area) parent).getChildAt(index);
+        return ((Box) parent).getChildAt(index);
     }
 
     @Override
     public int getChildCount(Object parent)
     {
-        return ((Area) parent).getChildCount();
+        return ((Box) parent).getChildCount();
     }
 
     @Override
     public boolean isLeaf(Object node)
     {
-        return ((Area) node).isLeaf();
+        return ((Box) node).getChildCount() == 0;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class AreaTreeModel implements TreeModel
     @Override
     public int getIndexOfChild(Object parent, Object child)
     {
-        Area p = (Area) parent;
+        Box p = (Box) parent;
         for (int i = 0; i < p.getChildCount(); i++)
         {
             if (p.getChildAt(i) == child)
