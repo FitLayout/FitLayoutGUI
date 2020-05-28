@@ -22,9 +22,9 @@ import javax.swing.tree.TreePath;
 
 import org.eclipse.rdf4j.model.IRI;
 
-import cz.vutbr.fit.layout.gui.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.BlockBrowser;
 import cz.vutbr.fit.layout.ide.Utils;
+import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.misc.ArtifactTreeCellRenderer;
 import cz.vutbr.fit.layout.ide.misc.BoxTreeModel;
 import cz.vutbr.fit.layout.model.Artifact;
