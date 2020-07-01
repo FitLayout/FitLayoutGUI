@@ -287,18 +287,6 @@ public class BlockBrowser implements Browser
     }
 
     @Override
-    public Area getSelectedArea()
-    {
-        return segmentationTab.getSelectedArea();
-    }
-
-    @Override
-    public void displayAreaDetails(Area area)
-    {
-        segmentationTab.displayAreaInfo(area);
-    }
-
-    @Override
     public void addAreaSelectionListener(AreaSelectionListener listener)
     {
         areaListeners.add(listener);
@@ -398,23 +386,14 @@ public class BlockBrowser implements Browser
             public void mouseMoved(MouseEvent e) 
             { 
                 String s = "Absolute: " + e.getX() + ":" + e.getY();
-                Area node = segmentationTab.getSelectedArea();
+                //Area node = segmentationTab.getSelectedArea();
+                Area node = null; //TODO
                 if (node != null)
                 {
                     Area area = (Area) node;
                     int rx = e.getX() - area.getX1();
                     int ry = e.getY() - area.getY1();
                     s += "  Relative: " + rx + ":" + ry;
-                    /*if (area.getBounds().contains(e.getX(), e.getY()))
-                    {
-                        AreaGrid grid = area.getGrid();
-                        if (grid != null)
-                        {
-                            int gx = grid.findCellX(e.getX());
-                            int gy = grid.findCellY(e.getY());
-                            s += "  Grid: " + gx + ":" + gy;
-                        }
-                    }*/
                 }
                 statusText.setText(s);
                 canvasMove(e.getX(), e.getY());
@@ -829,11 +808,7 @@ public class BlockBrowser implements Browser
     
     public void initPlugins()
     {
-        for (BrowserPlugin plugin : ServiceManager.findBrowserPlugins())
-        {
-            log.info("Init plugin: {}", plugin.getClass().getName());
-            plugin.init(this);
-        }
+        //TODO
     }
     
     /**
@@ -1112,12 +1087,12 @@ public class BlockBrowser implements Browser
             {
 				public void actionPerformed(java.awt.event.ActionEvent e)
                 {
-                    Box node = boxTreeTab.getSelectedBox();
+                    /*Box node = boxTreeTab.getSelectedBox();
                     if (node != null)
                     {
                         showAllBoxes(node);
                         contentCanvas.repaint();
-                    }
+                    }*/
                 }
             });
         }
@@ -1140,12 +1115,12 @@ public class BlockBrowser implements Browser
             {
 				public void actionPerformed(java.awt.event.ActionEvent e)
                 {
-                    Area node = segmentationTab.getSelectedArea();
+                    /*Area node = segmentationTab.getSelectedArea();
                     if (node != null)
                     {
                         showAreas(node, null);
                         contentCanvas.repaint();
-                    }
+                    }*/
                 }
             });
         }
@@ -1248,12 +1223,12 @@ public class BlockBrowser implements Browser
             {
                 public void actionPerformed(java.awt.event.ActionEvent e)
                 {
-                    Area node = segmentationTab.getSelectedArea();
+                    /*Area node = segmentationTab.getSelectedArea();
                     if (node != null)
                     {
                         showAreas(node, "<area");
                         contentCanvas.repaint();
-                    }
+                    }*/
                 }
             });
         }
@@ -1276,12 +1251,12 @@ public class BlockBrowser implements Browser
           {
               public void actionPerformed(java.awt.event.ActionEvent e)
               {
-                  Area node = segmentationTab.getSelectedArea();
+                  /*Area node = segmentationTab.getSelectedArea();
                   if (node != null)
                   {
                       showAreas(node, "<chunk");
                       contentCanvas.repaint();
-                  }
+                  }*/
               }
           });
         }
