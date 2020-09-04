@@ -36,6 +36,7 @@ public class ParamsPanel extends JPanel implements ChangeListener, DocumentListe
 {
     private static final long serialVersionUID = 1L;
     
+    private ServiceManager serviceManager;
     private ParametrizedOperation op;
     private Map<String, Object> params;
     private boolean directMode;
@@ -44,9 +45,10 @@ public class ParamsPanel extends JPanel implements ChangeListener, DocumentListe
     private Map<String, Component> fields;
     private boolean autosave = true;
     
-    public ParamsPanel()
+    public ParamsPanel(ServiceManager serviceManager)
     {
         super();
+        this.serviceManager = serviceManager;
         op = null;
         params = null;
         directMode = true;
@@ -79,7 +81,7 @@ public class ParamsPanel extends JPanel implements ChangeListener, DocumentListe
         this.op = op;
         if (params == null)
         {
-            this.params = ServiceManager.getServiceParams(op);
+            this.params = serviceManager.getServiceParams(op);
             directMode = true;
         }
         else
@@ -206,7 +208,7 @@ public class ParamsPanel extends JPanel implements ChangeListener, DocumentListe
         {
             boolean a = autosave;
             autosave = false;
-            this.params = ServiceManager.getServiceParams(op);
+            this.params = serviceManager.getServiceParams(op);
             setParams(this.params);
             autosave = a;
         }

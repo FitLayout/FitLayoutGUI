@@ -25,7 +25,6 @@ import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
 
 import cz.vutbr.fit.layout.api.AreaTreeOperator;
-import cz.vutbr.fit.layout.api.ServiceManager;
 import cz.vutbr.fit.layout.process.GUIProcessor;
 
 import java.awt.event.ActionListener;
@@ -171,7 +170,7 @@ public class OperatorConfigWindow extends JFrame
                     {
                         AreaTreeOperator op = (AreaTreeOperator) sel;
                         proc.getSelectedOperators().add(op);
-                        proc.getOperatorParams().add(ServiceManager.getServiceParams(op));
+                        proc.getOperatorParams().add(proc.getServiceManager().getServiceParams(op));
                         updateLists();
                     }
                 }
@@ -218,7 +217,7 @@ public class OperatorConfigWindow extends JFrame
         javax.swing.ToolTipManager.sharedInstance().registerComponent(availList);
         availScroll.setViewportView(availList);
         
-        paramsPanel = new ParamsPanel();
+        paramsPanel = new ParamsPanel(proc.getServiceManager());
         GridBagConstraints gbc_paramsPanel = new GridBagConstraints();
         gbc_paramsPanel.insets = new Insets(0, 0, 5, 0);
         gbc_paramsPanel.gridwidth = 3;
