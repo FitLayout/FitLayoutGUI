@@ -15,12 +15,11 @@ import org.eclipse.rdf4j.model.IRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.vutbr.fit.layout.api.ArtifactRepository;
 import cz.vutbr.fit.layout.api.ArtifactService;
 import cz.vutbr.fit.layout.api.OutputDisplay;
-import cz.vutbr.fit.layout.api.ServiceManager;
 import cz.vutbr.fit.layout.ide.api.AreaSelectionListener;
 import cz.vutbr.fit.layout.ide.api.Browser;
-import cz.vutbr.fit.layout.ide.api.BrowserPlugin;
 import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.api.RectangleSelectionListener;
 import cz.vutbr.fit.layout.ide.api.TreeListener;
@@ -416,6 +415,11 @@ public class BlockBrowser implements Browser
         return proc;
     }
     
+    public ArtifactRepository getArtifactRepository()
+    {
+        return getProcessor().getServiceManager().getArtifactRepository();
+    }
+    
     public void reloadServiceParams()
     {
         for (BrowserTabState tab : browserTabs)
@@ -563,6 +567,15 @@ public class BlockBrowser implements Browser
             return null;
     }
     
+    private Artifact getParentArtifact(Artifact artifact)
+    {
+        final IRI parentIri = artifact.getParentIri();
+        if (parentIri != null)
+            return getArtifactRepository().getArtifact(parentIri);
+        else
+            return null;
+    }
+    
     /**
      * Finds the nearest artifact of the given type in the artifact tree.
      * @param artifactType
@@ -572,10 +585,10 @@ public class BlockBrowser implements Browser
     {
         Artifact ret = getSelectedArtifact();
         while (ret != null && !artifactType.equals(ret.getArtifactType()))
-            ret = ret.getParent();
+            ret = getParentArtifact(ret);
         return ret;
     }
-    
+
     @Override
     public Artifact getSelectedArtifact()
     {
@@ -591,7 +604,7 @@ public class BlockBrowser implements Browser
     {
         Artifact a = getSelectedArtifact();
         while (a != null && !(a instanceof Page))
-            a = a.getParent();
+            a = getParentArtifact(a);
         return (Page) a;
     }
     
