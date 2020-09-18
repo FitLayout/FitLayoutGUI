@@ -324,10 +324,12 @@ public class BlockBrowser implements Browser
         rectangleListeners.remove(listener);
     }
 
+    //================================================================================================================================
+    
     @Override
     public void addPage(Page page) 
     {
-        proc.addPage(page);
+        getArtifactRepository().addArtifact(page);
         var node = new DefaultMutableTreeNode(page);
         artifactTreeRoot.add(node);
         ((DefaultTreeModel) artifactTree.getModel()).reload();
@@ -345,6 +347,7 @@ public class BlockBrowser implements Browser
         var pnode = findNodeWithArtifact(parent, artifactTreeRoot);
         if (pnode != null)
         {
+            getArtifactRepository().addArtifact(artifact);
             var node = new DefaultMutableTreeNode(artifact);
             pnode.add(node);
             ((DefaultTreeModel) artifactTree.getModel()).reload();
@@ -407,17 +410,12 @@ public class BlockBrowser implements Browser
 	@Override
 	public List<Page> getPages() 
 	{
-		return proc.getPages();
+		return getArtifactsOfType(Page.class, BOX.Page);
 	}
     
     public GUIProcessor getProcessor()
     {
         return proc;
-    }
-    
-    public ArtifactRepository getArtifactRepository()
-    {
-        return getProcessor().getServiceManager().getArtifactRepository();
     }
     
     public void reloadServiceParams()
@@ -524,6 +522,24 @@ public class BlockBrowser implements Browser
     }
     
     //=============================================================================================================
+    
+    protected ArtifactRepository getArtifactRepository()
+    {
+        return getProcessor().getServiceManager().getArtifactRepository();
+    }
+    
+    protected <T extends Artifact> List<T> getArtifactsOfType(Class<T> clazz, IRI artifactType)
+    {
+        List<T> ret = new ArrayList<>();
+        for (Artifact a : getArtifactRepository().getArtifacts())
+        {
+            if (a.getArtifactType().equals(artifactType))
+            {
+                ret.add(clazz.cast(a));
+            }
+        }
+        return ret;
+    }
     
     /**
      * Renders a new page using a configured provider and adds the page to the browser.
