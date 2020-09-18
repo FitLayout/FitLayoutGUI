@@ -531,8 +531,9 @@ public class BlockBrowser implements Browser
     protected <T extends Artifact> List<T> getArtifactsOfType(Class<T> clazz, IRI artifactType)
     {
         List<T> ret = new ArrayList<>();
-        for (Artifact a : getArtifactRepository().getArtifacts())
+        for (IRI iri : getArtifactRepository().getArtifactIRIs())
         {
+            Artifact a = getArtifactRepository().getArtifact(iri);
             if (a.getArtifactType().equals(artifactType))
             {
                 ret.add(clazz.cast(a));
