@@ -16,8 +16,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.ListModel;
 
+import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.api.AreaSelectionListener;
-import cz.vutbr.fit.layout.ide.api.Browser;
 import cz.vutbr.fit.layout.ide.api.BrowserPlugin;
 import cz.vutbr.fit.layout.model.Area;
 import cz.vutbr.fit.layout.segm.AreaImpl;
@@ -50,9 +50,10 @@ public class SegmentatorPlugin implements BrowserPlugin, AreaSelectionListener
     
     private void initGui()
     {
-        browser.addStructurePanel("Separators", getSepListPanel());
+        //TODO
+        /*browser.addStructurePanel("Separators", getSepListPanel());
         browser.addToolBar(getShowToolBar());
-        browser.addAreaSelectionListener(this);
+        browser.addAreaSelectionListener(this);*/
     }
     
     //========================================================================================
@@ -87,7 +88,7 @@ public class SegmentatorPlugin implements BrowserPlugin, AreaSelectionListener
     private void drawSeparator(Separator sep)
     {
         final Color color = sep.isHorizontal() ? Color.BLUE : Color.RED;
-        browser.getOutputDisplay().drawRectangle(sep, color);
+        browser.getWindow().getOutputDisplay().drawRectangle(sep, color);
     }
 
     /** 
@@ -98,7 +99,7 @@ public class SegmentatorPlugin implements BrowserPlugin, AreaSelectionListener
         ListModel<Separator> ml = sepList.getModel();
         for (int i = 0; i < ml.getSize(); i++)
             drawSeparator(ml.getElementAt(i));
-        browser.updateDisplay();
+        browser.getWindow().updateDisplay();
     }
     
     //========================================================================================
@@ -140,7 +141,7 @@ public class SegmentatorPlugin implements BrowserPlugin, AreaSelectionListener
                     if (sep != null)
                     {
                         drawSeparator(sep);
-                        browser.updateDisplay();
+                        browser.getWindow().updateDisplay();
                     }
                 }
             });

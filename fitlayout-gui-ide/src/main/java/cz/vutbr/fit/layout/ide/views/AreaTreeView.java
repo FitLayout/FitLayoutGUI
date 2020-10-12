@@ -26,7 +26,7 @@ import javax.swing.tree.TreePath;
 
 import org.eclipse.rdf4j.model.IRI;
 
-import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.Utils;
 import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.misc.AreaTreeModel;
@@ -59,11 +59,11 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
     private boolean showTreeSelection = true;
 
     
-    public AreaTreeView(BlockBrowser browser)
+    public AreaTreeView(Browser browser)
     {
         super(browser);
         viewPanel = createViewPanel();
-        browser.addCanvasClickListener(null, this, false);
+        browser.getWindow().addCanvasClickListener(null, this, false);
     }
 
     @Override
@@ -169,8 +169,8 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
     
     private void showArea(Area area)
     {
-        browser.getOutputDisplay().drawExtent(area);
-        browser.updateDisplay();
+        browser.getWindow().getOutputDisplay().drawExtent(area);
+        browser.getWindow().updateDisplay();
         
         //show the info table
         displayAreaInfo(area);
@@ -384,7 +384,7 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
                             showAreaInLogicalTree(node);
                             areasync = true;*/
                         }
-                        browser.notifyAreaSelection(node);
+                        browser.getWindow().notifyAreaSelection(node);
                     }
                 }
             });

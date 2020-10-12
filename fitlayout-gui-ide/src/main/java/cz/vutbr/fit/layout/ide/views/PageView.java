@@ -22,7 +22,7 @@ import javax.swing.tree.TreePath;
 
 import org.eclipse.rdf4j.model.IRI;
 
-import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.Utils;
 import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.misc.ArtifactTreeCellRenderer;
@@ -49,11 +49,11 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
     private Page currentPage;
 
 
-    public PageView(BlockBrowser browser)
+    public PageView(Browser browser)
     {
         super(browser);
         viewPanel = createViewPanel();
-        browser.addCanvasClickListener(null, this, false);
+        browser.getWindow().addCanvasClickListener(null, this, false);
     }
 
     @Override
@@ -126,8 +126,8 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
     public void showBox(Box node)
     {
         //System.out.println("Node:" + node);
-        browser.getOutputDisplay().drawExtent(node);
-        browser.updateDisplay();
+        browser.getWindow().getOutputDisplay().drawExtent(node);
+        browser.getWindow().updateDisplay();
         displayBoxInfo(node);
     }
     

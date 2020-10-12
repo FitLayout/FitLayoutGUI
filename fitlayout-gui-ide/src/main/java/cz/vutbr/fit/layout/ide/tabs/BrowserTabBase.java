@@ -5,7 +5,7 @@
  */
 package cz.vutbr.fit.layout.ide.tabs;
 
-import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Browser;
 
 /**
  * 
@@ -13,11 +13,11 @@ import cz.vutbr.fit.layout.ide.BlockBrowser;
  */
 public abstract class BrowserTabBase implements BrowserTab
 {
-    protected BlockBrowser browser;
+    protected Browser browser;
     private boolean active;
 
     
-    public BrowserTabBase(BlockBrowser browser)
+    public BrowserTabBase(Browser browser)
     {
         this.browser = browser;
     }

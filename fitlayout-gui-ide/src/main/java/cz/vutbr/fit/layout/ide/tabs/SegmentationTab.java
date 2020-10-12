@@ -7,7 +7,7 @@ package cz.vutbr.fit.layout.ide.tabs;
 
 import javax.swing.JPanel;
 
-import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Browser;
 
 /**
  * 
@@ -18,7 +18,7 @@ public class SegmentationTab extends BrowserTabBase
     private SegmentationPanel segmentationPanel;
     
     
-    public SegmentationTab(BlockBrowser browser)
+    public SegmentationTab(Browser browser)
     {
         super(browser);
         segmentationPanel = new SegmentationPanel(browser);

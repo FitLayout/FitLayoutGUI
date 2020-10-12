@@ -17,7 +17,7 @@ import org.eclipse.rdf4j.model.IRI;
 
 import cz.vutbr.fit.layout.api.ArtifactService;
 import cz.vutbr.fit.layout.api.ParametrizedOperation;
-import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.tabs.ParamsPanel;
 
 /**
@@ -31,20 +31,20 @@ public class ArtifactProviderPanel extends JPanel
 
     private IRI artifactType;
     
-    private BlockBrowser browser;
+    private Browser browser;
     
     private JComboBox<ArtifactService> serviceCombo;
     private ParamsPanel serviceParamsPanel;
     
 
-    public ArtifactProviderPanel(BlockBrowser browser, IRI artifactType)
+    public ArtifactProviderPanel(Browser browser, IRI artifactType)
     {
         super();
         this.browser = browser;
         this.artifactType = artifactType;
     }
 
-    public BlockBrowser getBrowser()
+    public Browser getBrowser()
     {
         return browser;
     }

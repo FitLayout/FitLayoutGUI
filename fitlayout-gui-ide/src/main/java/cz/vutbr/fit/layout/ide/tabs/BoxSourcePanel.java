@@ -4,17 +4,12 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Vector;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.views.ArtifactProviderPanel;
 import cz.vutbr.fit.layout.ontology.BOX;
 
@@ -30,7 +25,7 @@ public class BoxSourcePanel extends ArtifactProviderPanel
     /**
      * Create the panel.
      */
-    public BoxSourcePanel(BlockBrowser browser)
+    public BoxSourcePanel(Browser browser)
     {
         super(browser, BOX.Page);
         
@@ -77,7 +72,7 @@ public class BoxSourcePanel extends ArtifactProviderPanel
         if (i != -1)
         {
             var btp = getServiceCombo().getItemAt(i);
-            getBrowser().renderPage(btp, getServiceParamsPanel().getParams());
+            getBrowser().createAndAddArtifact(null, btp, getServiceParamsPanel().getParams());
         }
     }
     

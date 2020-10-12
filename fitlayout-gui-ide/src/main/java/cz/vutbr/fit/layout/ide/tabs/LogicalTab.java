@@ -7,7 +7,7 @@ package cz.vutbr.fit.layout.ide.tabs;
 
 import javax.swing.JPanel;
 
-import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Browser;
 
 /**
  * 
@@ -16,7 +16,7 @@ import cz.vutbr.fit.layout.ide.BlockBrowser;
 public class LogicalTab extends BrowserTabBase
 {
 
-    public LogicalTab(BlockBrowser browser)
+    public LogicalTab(Browser browser)
     {
         super(browser);
         // TODO Auto-generated constructor stub

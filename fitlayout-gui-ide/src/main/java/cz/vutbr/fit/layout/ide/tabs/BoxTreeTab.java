@@ -7,7 +7,7 @@ package cz.vutbr.fit.layout.ide.tabs;
 
 import javax.swing.JPanel;
 
-import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Browser;
 
 /**
  * A composition of the box sources panel and the corresponding gui parts.
@@ -19,7 +19,7 @@ public class BoxTreeTab extends BrowserTabBase
     private BoxSourcePanel boxSourcePanel;
     
     
-    public BoxTreeTab(BlockBrowser browser)
+    public BoxTreeTab(Browser browser)
     {
         super(browser);
         boxSourcePanel = new BoxSourcePanel(browser);

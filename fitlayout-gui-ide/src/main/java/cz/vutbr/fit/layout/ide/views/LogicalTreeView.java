@@ -20,7 +20,7 @@ import javax.swing.JTree;
 
 import org.eclipse.rdf4j.model.IRI;
 
-import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.misc.AreaTreeModel;
 import cz.vutbr.fit.layout.ide.misc.ArtifactTreeCellRenderer;
@@ -47,11 +47,11 @@ public class LogicalTreeView extends ArtifactViewBase implements CanvasClickList
     private LogicalAreaTree currentAreaTree;
 
     
-    public LogicalTreeView(BlockBrowser browser)
+    public LogicalTreeView(Browser browser)
     {
         super(browser);
         viewPanel = createViewPanel();
-        browser.addCanvasClickListener(null, this, false);
+        browser.getWindow().addCanvasClickListener(null, this, false);
     }
 
     @Override

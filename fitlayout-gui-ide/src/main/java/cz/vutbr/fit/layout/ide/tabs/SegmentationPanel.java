@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import cz.vutbr.fit.layout.api.ArtifactService;
-import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.views.ArtifactProviderPanel;
 import cz.vutbr.fit.layout.impl.DefaultContentRect;
 import cz.vutbr.fit.layout.ontology.SEGM;
@@ -30,7 +30,7 @@ public class SegmentationPanel extends ArtifactProviderPanel
 
     protected OperatorConfigWindow operatorWindow;
 
-    public SegmentationPanel(BlockBrowser browser)
+    public SegmentationPanel(Browser browser)
     {
         super(browser, SEGM.AreaTree);
         

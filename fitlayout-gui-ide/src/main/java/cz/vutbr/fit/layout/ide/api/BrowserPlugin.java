@@ -5,6 +5,8 @@
  */
 package cz.vutbr.fit.layout.ide.api;
 
+import cz.vutbr.fit.layout.ide.Browser;
+
 /**
  * A browser plugin that extend the GUI browser functionality.
  * 

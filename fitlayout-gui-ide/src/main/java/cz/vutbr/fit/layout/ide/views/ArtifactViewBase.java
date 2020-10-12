@@ -5,7 +5,7 @@
  */
 package cz.vutbr.fit.layout.ide.views;
 
-import cz.vutbr.fit.layout.ide.BlockBrowser;
+import cz.vutbr.fit.layout.ide.Browser;
 
 /**
  * 
@@ -13,11 +13,11 @@ import cz.vutbr.fit.layout.ide.BlockBrowser;
  */
 public abstract class ArtifactViewBase implements ArtifactView
 {
-    protected BlockBrowser browser;
+    protected Browser browser;
     private boolean active;
 
     
-    public ArtifactViewBase(BlockBrowser browser)
+    public ArtifactViewBase(Browser browser)
     {
         this.browser = browser;
     }
