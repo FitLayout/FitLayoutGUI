@@ -27,6 +27,7 @@ import cz.vutbr.fit.layout.api.ArtifactRepository;
 import cz.vutbr.fit.layout.model.Artifact;
 
 /**
+ * A tree model which is backed with an ArtifactRepository.
  * 
  * @author burgetr
  */
@@ -45,6 +46,16 @@ public class ArtifactTreeModel extends DefaultTreeModel
         this.repo = repo;
         nodeMap = new HashMap<>();
         updateArtifactTree();
+    }
+    
+    /**
+     * Finds the tree node that contains the given artifact.
+     * @param a the artifact to find
+     * @return the tree node or {@code null} when the artifacti is not contained in any tree node
+     */
+    public DefaultMutableTreeNode getNodeForArtifact(Artifact a)
+    {
+        return nodeMap.get(a.getIri());
     }
     
     /**
@@ -113,7 +124,6 @@ public class ArtifactTreeModel extends DefaultTreeModel
         var newChild = new DefaultMutableTreeNode(artifact);
         insertNodeInto(newChild, parent, parent.getChildCount());
         nodeMap.put(artifact.getIri(), newChild);
-        //parent.add(new DefaultMutableTreeNode(artifact));
     }
     
     private void retainChildNodes(DefaultMutableTreeNode root, Collection<IRI> toRetain)

@@ -95,6 +95,7 @@ public class Browser
         Artifact ret = processor.processArtifact(null, provider, params);
         repository.addArtifact(ret);
         artifactTreeModel.updateArtifactTree();
+        window.selectArtifact(ret);
         return ret;
     }
     
@@ -114,6 +115,7 @@ public class Browser
             Artifact result = provider.process(parent);
             repository.addArtifact(result);
             artifactTreeModel.updateArtifactTree();
+            window.selectArtifact(result);
             return result;
         }
         else

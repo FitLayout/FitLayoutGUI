@@ -18,6 +18,7 @@ import cz.vutbr.fit.layout.ide.api.AreaSelectionListener;
 import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.api.RectangleSelectionListener;
 import cz.vutbr.fit.layout.ide.api.TreeListener;
+import cz.vutbr.fit.layout.ide.misc.ArtifactTreeModel;
 import cz.vutbr.fit.layout.ide.tabs.BrowserPanel;
 import cz.vutbr.fit.layout.ide.tabs.BrowserTab;
 import cz.vutbr.fit.layout.ide.tabs.BrowserTabState;
@@ -48,6 +49,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -247,6 +249,17 @@ public class BrowserWindow
         getArtifactTree().setModel(model);
     }
     
+    public void addArtifactView(ArtifactView view)
+    {
+        List<ArtifactView> list = artifactViews.get(view.getArtifactType());
+        if (list == null)
+        {
+            list = new ArrayList<>();
+            artifactViews.put(view.getArtifactType(), list);
+        }
+        list.add(view);
+    }
+    
     //================================================================================================================================
     
     public void addTab(BrowserTab tab, boolean optional, boolean visible)
@@ -305,18 +318,61 @@ public class BrowserWindow
             browserTabs.get(i).getBrowserTab().setActive(i == index);
     }
     
-    public void addArtifactView(ArtifactView view)
+    private void viewTabSelected(int index)
     {
-        List<ArtifactView> list = artifactViews.get(view.getArtifactType());
-        if (list == null)
+        if (currentArtifactViews != null)
         {
-            list = new ArrayList<>();
-            artifactViews.put(view.getArtifactType(), list);
+            for (int i = 0; i < currentArtifactViews.size(); i++)
+                currentArtifactViews.get(i).setActive(i == index);
         }
-        list.add(view);
     }
     
-    public void setCurrentPage(Page page) 
+    //=============================================================================================================
+    
+    /**
+     * Selects the given artifact in the artifact tree.
+     * @param a the artifact to select
+     */
+    public void selectArtifact(Artifact a)
+    {
+        ArtifactTreeModel model = (ArtifactTreeModel) artifactTree.getModel();
+        DefaultMutableTreeNode node = model.getNodeForArtifact(a);
+        if (node != null)
+            artifactTree.setSelectionPath(new TreePath(node.getPath()));
+    }
+    
+    /**
+     * Gets the artifact that is currently selected in the artifact tree.
+     * @return the selected artifact or {@code null} when nothing is selected.
+     */
+    public Artifact getSelectedArtifact()
+    {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) artifactTree.getLastSelectedPathComponent();
+        if (node != null && node.getUserObject() != null)
+            return (Artifact) node.getUserObject();
+        else
+            return null;
+    }
+
+    /**
+     * Finds the Page artifact related to the currently selected artifact.
+     * @return the Page corresponding to the currently selected artifact or {@code null} when
+     * nothing is selected or no such page exists.
+     */
+    private Page getSelectedPage()
+    {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) artifactTree.getLastSelectedPathComponent();
+        while (node != null && node.getUserObject() != null)
+        {
+            if (node.getUserObject() instanceof Page)
+                return (Page) node.getUserObject();
+            else
+                node = (DefaultMutableTreeNode) node.getParent();
+        }
+        return null;
+    }
+    
+    private void setCurrentPage(Page page) 
     {
         contentCanvas = createContentCanvas(page);
         
@@ -366,7 +422,7 @@ public class BrowserWindow
         notifyBoxTreeUpdate(page);
     }
     
-    public void selectArtifact(Artifact a)
+    private void artifactSelected(Artifact a)
     {
         //change current page if changed
         if (getSelectedPage() != currentPage && getSelectedPage() != null)
@@ -383,48 +439,6 @@ public class BrowserWindow
                 view.show(a);
             }
         }
-    }
-    
-    private void viewTabSelected(int index)
-    {
-        if (currentArtifactViews != null)
-        {
-            for (int i = 0; i < currentArtifactViews.size(); i++)
-                currentArtifactViews.get(i).setActive(i == index);
-        }
-    }
-    
-    //=============================================================================================================
-    
-    /**
-     * Gets the artifact that is currently selected in the artifact tree.
-     * @return the selected artifact or {@code null} when nothing is selected.
-     */
-    public Artifact getSelectedArtifact()
-    {
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) artifactTree.getLastSelectedPathComponent();
-        if (node != null && node.getUserObject() != null)
-            return (Artifact) node.getUserObject();
-        else
-            return null;
-    }
-
-    /**
-     * Finds the Page artifact related to the currently selected artifact.
-     * @return the Page corresponding to the currently selected artifact or {@code null} when
-     * nothing is selected or no such page exists.
-     */
-    protected Page getSelectedPage()
-    {
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) artifactTree.getLastSelectedPathComponent();
-        while (node != null && node.getUserObject() != null)
-        {
-            if (node.getUserObject() instanceof Page)
-                return (Page) node.getUserObject();
-            else
-                node = (DefaultMutableTreeNode) node.getParent();
-        }
-        return null;
     }
     
     //=============================================================================================================
@@ -1045,7 +1059,7 @@ public class BrowserWindow
                 {
                     Artifact a = getSelectedArtifact();
                     if (a != null)
-                        selectArtifact(a);
+                        artifactSelected(a);
                 }
             });
         }
