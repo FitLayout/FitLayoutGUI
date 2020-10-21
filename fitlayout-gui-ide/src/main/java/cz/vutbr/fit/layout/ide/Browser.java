@@ -24,6 +24,8 @@ import cz.vutbr.fit.layout.ide.views.PageView;
 import cz.vutbr.fit.layout.impl.DefaultArtifactRepository;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.process.GUIProcessor;
+import cz.vutbr.fit.layout.rdf.RDFArtifactRepository;
+import cz.vutbr.fit.layout.rdf.RDFStorage;
 
 /**
  * 
@@ -44,8 +46,10 @@ public class Browser
     
     public Browser()
     {
-        processor = new GUIProcessor();
-        repository = new DefaultArtifactRepository();
+        //repository = new DefaultArtifactRepository();
+        RDFStorage storage = RDFStorage.createNative(System.getProperty("user.home") + "/.fitlayout/storage");
+        repository = new RDFArtifactRepository(storage);
+        processor = new GUIProcessor(repository);
     }
     
     public BrowserWindow getWindow()
@@ -180,7 +184,7 @@ public class Browser
      */
     public static void main(String[] args)
     {
-        final String urlstring = (args.length > 0) ? args[0] : "http://cssbox.sf.net";
+        final String urlstring = (args.length > 0) ? args[0] : null;
         EventQueue.invokeLater(new Runnable()
         {
             public void run()
@@ -190,9 +194,12 @@ public class Browser
                     var browser = new Browser();
                     browser.initGUI();
                     
-                    //URL url = new URL("http://www.reuters.com/article/2014/03/28/us-trading-momentum-analysis-idUSBREA2R09M20140328");
-                    URL url = new URL(urlstring);
-                    browser.setLocation(url.toString());
+                    //urlstring = "http://www.reuters.com/article/2014/03/28/us-trading-momentum-analysis-idUSBREA2R09M20140328";
+                    if (urlstring != null)
+                    {
+                        URL url = new URL(urlstring);
+                        browser.setLocation(url.toString());
+                    }
                         
                 } catch (Exception e) {
                     e.printStackTrace();
