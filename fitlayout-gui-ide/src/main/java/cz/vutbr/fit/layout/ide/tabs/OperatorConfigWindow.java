@@ -100,7 +100,7 @@ public class OperatorConfigWindow extends JFrame
                 {
                     AreaTreeOperator uop = usedList.getSelectedValue();
                     uopIndex = usedList.getSelectedIndex();
-                    paramsPanel.setOperation(uop, proc.getOperatorParams().elementAt(uopIndex));
+                    paramsPanel.setOperation(uop, proc.getOperatorParams().get(uopIndex));
                 }
             }
         });
@@ -259,7 +259,7 @@ public class OperatorConfigWindow extends JFrame
 
     private void updateUsedList()
     {
-        Vector<AreaTreeOperator> used = proc.getSelectedOperators();
+        Vector<AreaTreeOperator> used = new Vector<>(proc.getSelectedOperators());
         usedList.setModel(new DefaultComboBoxModel<AreaTreeOperator>(used));
         
         //try to restore selection
