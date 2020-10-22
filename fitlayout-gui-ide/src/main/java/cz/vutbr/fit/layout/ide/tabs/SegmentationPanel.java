@@ -29,6 +29,7 @@ public class SegmentationPanel extends ArtifactProviderPanel
     private JButton btnOperators;
 
     protected OperatorConfigWindow operatorWindow;
+    private JButton btnApply;
 
     public SegmentationPanel(Browser browser)
     {
@@ -36,7 +37,7 @@ public class SegmentationPanel extends ArtifactProviderPanel
         
         GridBagLayout gbl_sourcesTab = new GridBagLayout();
         gbl_sourcesTab.columnWeights = new double[] { 1.0 };
-        gbl_sourcesTab.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 1.0 };
+        gbl_sourcesTab.rowWeights = new double[] { 0.0, 0.0, 0.0 };
         setLayout(gbl_sourcesTab);
         
         GridBagConstraints gbc_segmChoicePanel = new GridBagConstraints();
@@ -85,6 +86,7 @@ public class SegmentationPanel extends ArtifactProviderPanel
             segmChoicePanel.add(getSegmRunButton());
             segmChoicePanel.add(getSegmAutorunCheckbox());
             segmChoicePanel.add(getBtnOperators());
+            segmChoicePanel.add(getBtnApply());
         }
         return segmChoicePanel;
     }
@@ -118,7 +120,7 @@ public class SegmentationPanel extends ArtifactProviderPanel
     {
         if (segmAutorunCheckbox == null)
         {
-            segmAutorunCheckbox = new JCheckBox("Run automatically");
+            segmAutorunCheckbox = new JCheckBox("Apply automatically");
         }
         return segmAutorunCheckbox;
     }
@@ -142,4 +144,16 @@ public class SegmentationPanel extends ArtifactProviderPanel
         return btnOperators;
     }
     
+    private JButton getBtnApply() {
+        if (btnApply == null) {
+        	btnApply = new JButton("Apply");
+        	btnApply.addActionListener(new ActionListener() {
+        	    public void actionPerformed(ActionEvent e)
+        	    {
+        	        
+        	    }
+        	});
+        }
+        return btnApply;
+    }
 }
