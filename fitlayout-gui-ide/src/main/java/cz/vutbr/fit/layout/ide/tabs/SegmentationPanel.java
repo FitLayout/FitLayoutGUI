@@ -16,6 +16,7 @@ import cz.vutbr.fit.layout.api.ArtifactService;
 import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.views.ArtifactProviderPanel;
 import cz.vutbr.fit.layout.impl.DefaultContentRect;
+import cz.vutbr.fit.layout.model.AreaTree;
 import cz.vutbr.fit.layout.ontology.SEGM;
 
 public class SegmentationPanel extends ArtifactProviderPanel
@@ -150,7 +151,11 @@ public class SegmentationPanel extends ArtifactProviderPanel
         	btnApply.addActionListener(new ActionListener() {
         	    public void actionPerformed(ActionEvent e)
         	    {
-        	        
+        	        var atree = getBrowser().getNearestArtifact(SEGM.AreaTree);
+        	        if (atree != null)
+        	        {
+        	            getBrowser().getProcessor().applyOperators((AreaTree) atree);
+        	        }
         	    }
         	});
         }

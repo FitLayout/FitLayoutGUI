@@ -140,7 +140,7 @@ public class Browser
      * @param artifactType
      * @return
      */
-    private Artifact getNearestArtifact(IRI artifactType)
+    public Artifact getNearestArtifact(IRI artifactType)
     {
         Artifact ret = window.getSelectedArtifact();
         while (ret != null && !artifactType.equals(ret.getArtifactType()))
