@@ -20,7 +20,6 @@ import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.api.AreaSelectionListener;
 import cz.vutbr.fit.layout.ide.api.BrowserPlugin;
 import cz.vutbr.fit.layout.model.Area;
-import cz.vutbr.fit.layout.segm.AreaImpl;
 import cz.vutbr.fit.layout.segm.Config;
 import cz.vutbr.fit.layout.segm.op.Separator;
 import cz.vutbr.fit.layout.segm.op.SeparatorSet;
@@ -62,23 +61,15 @@ public class SegmentatorPlugin implements BrowserPlugin, AreaSelectionListener
     public void areaSelected(Area area)
     {
         //show the separator list
-        if (area instanceof AreaImpl)
-        {
-            SeparatorSet sset = Config.createSeparators((AreaImpl) area);
-            DefaultListModel<Separator> ml = new DefaultListModel<Separator>();
-            for (Separator sep : sset.getHorizontal())
-                ml.addElement(sep);
-            for (Separator sep : sset.getVertical())
-                ml.addElement(sep);
-            for (Separator sep : sset.getBoxsep())
-                ml.addElement(sep);
-            sepList.setModel(ml);
-        }
-        else
-        {
-            //not a grouping area -- no separators
-            sepList.setModel(new DefaultListModel<Separator>());
-        }
+        SeparatorSet sset = Config.createSeparators(area);
+        DefaultListModel<Separator> ml = new DefaultListModel<Separator>();
+        for (Separator sep : sset.getHorizontal())
+            ml.addElement(sep);
+        for (Separator sep : sset.getVertical())
+            ml.addElement(sep);
+        for (Separator sep : sset.getBoxsep())
+            ml.addElement(sep);
+        sepList.setModel(ml);
     }
 
     /**
