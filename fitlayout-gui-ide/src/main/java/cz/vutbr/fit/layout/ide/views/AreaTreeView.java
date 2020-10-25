@@ -208,9 +208,9 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
         vals.add(infoTableData("Bg separated", (area.isBackgroundSeparated()) ? "true" : "false"));
         vals.add(infoTableData("Is hor. sep.", (area.isHorizontalSeparator()) ? "true" : "false"));
         vals.add(infoTableData("Is vert. sep.", (area.isVerticalSeparator()) ? "true" : "false"));
-        vals.add(infoTableData("Avg. fsize", String.valueOf(area.getFontSize())));
-        vals.add(infoTableData("Avg. fweight", String.valueOf(area.getFontWeight())));
-        vals.add(infoTableData("Avg. fstyle", String.valueOf(area.getFontStyle())));
+        vals.add(infoTableData("Avg. fsize", String.valueOf(area.getTextStyle().getFontSize())));
+        vals.add(infoTableData("Avg. fweight", String.valueOf(area.getTextStyle().getFontWeight())));
+        vals.add(infoTableData("Avg. fstyle", String.valueOf(area.getTextStyle().getFontStyle())));
         //vals.add(infoTableData("Decl. fsize", String.valueOf(area.getDeclaredFontSize())));
         //vals.add(infoTableData("Luminosity", String.valueOf(area.getColorLuminosity())));
         //vals.add(infoTableData("Start color", colorString(a.getBoxes().firstElement().getStartColor())));

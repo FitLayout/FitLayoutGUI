@@ -155,11 +155,11 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
         vals.add(infoTableData("Bg separated", (box.isBackgroundSeparated()) ? "true" : "false"));
         
         vals.add(infoTableData("Font", box.getFontFamily()));
-        vals.add(infoTableData("Font size", String.valueOf(box.getFontSize())));
-        vals.add(infoTableData("Font weight", String.valueOf(box.getFontWeight())));
-        vals.add(infoTableData("Font style", String.valueOf(box.getFontStyle())));
-        vals.add(infoTableData("Underline", String.valueOf(box.getUnderline())));
-        vals.add(infoTableData("Line through", String.valueOf(box.getLineThrough())));
+        vals.add(infoTableData("Font size", String.valueOf(box.getTextStyle().getFontSize())));
+        vals.add(infoTableData("Font weight", String.valueOf(box.getTextStyle().getFontWeight())));
+        vals.add(infoTableData("Font style", String.valueOf(box.getTextStyle().getFontStyle())));
+        vals.add(infoTableData("Underline", String.valueOf(box.getTextStyle().getUnderline())));
+        vals.add(infoTableData("Line through", String.valueOf(box.getTextStyle().getLineThrough())));
         
         DefaultTableModel tab = new DefaultTableModel(vals, cols);
         infoTable.setModel(tab);
