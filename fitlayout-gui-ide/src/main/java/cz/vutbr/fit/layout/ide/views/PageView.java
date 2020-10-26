@@ -160,6 +160,7 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
         vals.add(infoTableData("Font style", String.valueOf(box.getTextStyle().getFontStyle())));
         vals.add(infoTableData("Underline", String.valueOf(box.getTextStyle().getUnderline())));
         vals.add(infoTableData("Line through", String.valueOf(box.getTextStyle().getLineThrough())));
+        vals.add(infoTableData("Cont. length", String.valueOf(box.getTextStyle().getContentLength())));
         
         DefaultTableModel tab = new DefaultTableModel(vals, cols);
         infoTable.setModel(tab);

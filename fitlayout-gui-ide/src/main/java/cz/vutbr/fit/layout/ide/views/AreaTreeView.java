@@ -181,6 +181,7 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
         Vector<String> cols = infoTableData("Property", "Value");
         
         Vector<Vector <String>> vals = new Vector<Vector <String>>();
+        vals.add(infoTableData("Id", String.valueOf(area.getId())));
         //vals.add(infoTableData("Layout", area.getLayoutType().toString()));
         if (area.getParent() == null)
             vals.add(infoTableData("GP", "---"));
@@ -211,6 +212,7 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
         vals.add(infoTableData("Avg. fsize", String.valueOf(area.getTextStyle().getFontSize())));
         vals.add(infoTableData("Avg. fweight", String.valueOf(area.getTextStyle().getFontWeight())));
         vals.add(infoTableData("Avg. fstyle", String.valueOf(area.getTextStyle().getFontStyle())));
+        vals.add(infoTableData("Cont. length", String.valueOf(area.getTextStyle().getContentLength())));
         //vals.add(infoTableData("Decl. fsize", String.valueOf(area.getDeclaredFontSize())));
         //vals.add(infoTableData("Luminosity", String.valueOf(area.getColorLuminosity())));
         //vals.add(infoTableData("Start color", colorString(a.getBoxes().firstElement().getStartColor())));
