@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.rdf4j.model.IRI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.vutbr.fit.layout.api.OutputDisplay;
 import cz.vutbr.fit.layout.ide.api.AreaSelectionListener;
@@ -34,6 +36,8 @@ import javax.swing.JToolBar;
 
 import java.awt.GridBagConstraints;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -44,11 +48,11 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 import java.awt.GridLayout;
+import java.awt.Image;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import java.awt.BorderLayout;
@@ -87,10 +91,13 @@ import javax.swing.event.TreeSelectionEvent;
  */
 public class BrowserWindow
 {
-    //private static Logger log = LoggerFactory.getLogger(BrowserWindow.class);
+    private static Logger log = LoggerFactory.getLogger(BrowserWindow.class);
     
     public static final float TAG_PROBABILITY_THRESHOLD = 0.3f; 
     private static final java.awt.Color selectionColor = new java.awt.Color(127, 127, 255, 127);
+    
+    private Browser browser;
+    private ArtifactTreeModel artifactTreeModel;
     
     private Page currentPage; //currently displayed page
     private boolean rectSelection = false; //rectangle area selection in progress
@@ -146,10 +153,13 @@ public class BrowserWindow
     private JMenuItem mntmQuit;
     private JMenu mnView;
     private JTabbedPane artifactViewTabs;
+    private JPanel artifactToolsPanel;
+    private JButton btnDeleteArtifact;
 
 
-    public BrowserWindow()
+    public BrowserWindow(Browser browser)
     {
+        this.browser = browser;
         areaListeners = new LinkedList<>();
         treeListeners = new LinkedList<>();
         rectangleListeners = new LinkedList<>();
@@ -158,6 +168,11 @@ public class BrowserWindow
         browserTabs = new LinkedList<>();
         tabViewItems = new LinkedList<>();
         artifactViews = new HashMap<>();
+    }
+    
+    public void init()
+    {
+        setArtifactTreeModel(new ArtifactTreeModel(browser.getRepository()));
     }
     
     //=============================================================================================================
@@ -244,9 +259,20 @@ public class BrowserWindow
         rectangleListeners.remove(listener);
     }
 
-    public void setArtifactTreeModel(TreeModel model)
+    public ArtifactTreeModel getArtifactTreeModel()
     {
+        return artifactTreeModel;
+    }
+    
+    public void setArtifactTreeModel(ArtifactTreeModel model)
+    {
+        artifactTreeModel = model; 
         getArtifactTree().setModel(model);
+    }
+    
+    public void updateArtifactTree()
+    {
+        artifactTreeModel.updateArtifactTree();
     }
     
     public void addArtifactView(ArtifactView view)
@@ -583,6 +609,7 @@ public class BrowserWindow
      * This method initializes jFrame   
      *  
      * @return javax.swing.JFrame   
+     * @wbp.parser.entryPoint
      */
     public JFrame getMainWindow()
     {
@@ -1031,8 +1058,21 @@ public class BrowserWindow
         if (artifactTreePanel == null)
         {
             artifactTreePanel = new JPanel();
-            artifactTreePanel.setLayout(new GridLayout(0, 1, 0, 0));
-            artifactTreePanel.add(getArtifactTreeScroll());
+            GridBagLayout gbl_artifactTreePanel = new GridBagLayout();
+            artifactTreePanel.setLayout(gbl_artifactTreePanel);
+            GridBagConstraints gbc_artifactToolsPanel = new GridBagConstraints();
+            gbc_artifactToolsPanel.fill = GridBagConstraints.BOTH;
+            gbc_artifactToolsPanel.gridx = 0;
+            gbc_artifactToolsPanel.gridy = 0;
+            artifactTreePanel.add(getArtifactToolsPanel(), gbc_artifactToolsPanel);
+            GridBagConstraints gbc_artifactTreeScroll = new GridBagConstraints();
+            gbc_artifactTreeScroll.insets = new Insets(0, 2, 0, 2);
+            gbc_artifactTreeScroll.weightx = 1.0;
+            gbc_artifactTreeScroll.weighty = 1.0;
+            gbc_artifactTreeScroll.fill = GridBagConstraints.BOTH;
+            gbc_artifactTreeScroll.gridx = 0;
+            gbc_artifactTreeScroll.gridy = 1;
+            artifactTreePanel.add(getArtifactTreeScroll(), gbc_artifactTreeScroll);
         }
         return artifactTreePanel;
     }
@@ -1130,6 +1170,47 @@ public class BrowserWindow
         return mnView;
     }
 
+    private JPanel getArtifactToolsPanel()
+    {
+        if (artifactToolsPanel == null)
+        {
+            artifactToolsPanel = new JPanel();
+            FlowLayout flowLayout = (FlowLayout) artifactToolsPanel.getLayout();
+            flowLayout.setVgap(2);
+            flowLayout.setAlignment(FlowLayout.RIGHT);
+            artifactToolsPanel.add(getBtnDeleteArtifact());
+        }
+        return artifactToolsPanel;
+    }
+
+    private JButton getBtnDeleteArtifact()
+    {
+        if (btnDeleteArtifact == null)
+        {
+            btnDeleteArtifact = new JButton("D");
+            btnDeleteArtifact.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    var art = getSelectedArtifact();
+                    if (art != null)
+                    {
+                        browser.deleteArtifact(art);
+                    }
+                }
+            });
+            btnDeleteArtifact.setMargin(new Insets(2, 5, 2, 5));
+            try {
+                Image img = ImageIO.read(
+                        BrowserWindow.class.getResource("/icons/delete16.png"));
+                btnDeleteArtifact.setIcon(new ImageIcon(img));
+                btnDeleteArtifact.setText(null);
+            } catch (Exception e) {
+                log.error("Couldn't load icon: {}", e.getMessage());
+            }
+        }
+        return btnDeleteArtifact;
+    }
+    
     //===========================================================================
     
     private class Selection extends JPanel

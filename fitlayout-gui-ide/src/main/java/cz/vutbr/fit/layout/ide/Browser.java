@@ -7,15 +7,17 @@ package cz.vutbr.fit.layout.ide;
 
 import java.awt.EventQueue;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Map;
 
 import javax.swing.JFrame;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 import org.eclipse.rdf4j.model.IRI;
 
 import cz.vutbr.fit.layout.api.ArtifactRepository;
 import cz.vutbr.fit.layout.api.ArtifactService;
-import cz.vutbr.fit.layout.ide.misc.ArtifactTreeModel;
 import cz.vutbr.fit.layout.ide.tabs.BoxSourcePanel;
 import cz.vutbr.fit.layout.ide.tabs.BoxTreeTab;
 import cz.vutbr.fit.layout.ide.tabs.SegmentationTab;
@@ -41,7 +43,6 @@ public class Browser
     
     private GUIProcessor processor;
     private ArtifactRepository repository;
-    private ArtifactTreeModel artifactTreeModel;
     
     
     public Browser()
@@ -98,7 +99,7 @@ public class Browser
     {
         Artifact ret = processor.processArtifact(null, provider, params);
         repository.addArtifact(ret);
-        artifactTreeModel.updateArtifactTree();
+        window.updateArtifactTree();
         window.selectArtifact(ret);
         return ret;
     }
@@ -118,7 +119,7 @@ public class Browser
         {
             Artifact result = provider.process(parent);
             repository.addArtifact(result);
-            artifactTreeModel.updateArtifactTree();
+            window.updateArtifactTree();
             window.selectArtifact(result);
             return result;
         }
@@ -148,6 +149,28 @@ public class Browser
         return ret;
     }
 
+    /**
+     * Deletes the artifact from repository.
+     * @param artifact
+     */
+    public void deleteArtifact(Artifact artifact)
+    {
+        DefaultMutableTreeNode node = window.getArtifactTreeModel().getNodeForArtifact(artifact);
+        if (node != null)
+        {
+            Enumeration<TreeNode> e = node.depthFirstEnumeration();
+            while (e.hasMoreElements())
+            {
+                Object desc = ((DefaultMutableTreeNode) e.nextElement()).getUserObject();
+                if (desc != null && desc instanceof Artifact)
+                {
+                    repository.removeArtifact(((Artifact) desc).getIri());
+                }
+            }
+            window.updateArtifactTree();
+        }
+    }
+    
     
     //=========================================================================
     
@@ -156,7 +179,7 @@ public class Browser
      */
     protected void initGUI()
     {
-        window = new BrowserWindow();
+        window = new BrowserWindow(this);
         
         JFrame main = window.getMainWindow();
         //main.setSize(1000,600);
@@ -165,8 +188,7 @@ public class Browser
         main.setSize(1600,1000);
         main.setVisible(true);
         
-        artifactTreeModel = new ArtifactTreeModel(repository);
-        window.setArtifactTreeModel(artifactTreeModel);
+        window.init();
         //add the default tabs
         boxTreeTab = new BoxTreeTab(this);
         window.addTab(boxTreeTab, false, true);
