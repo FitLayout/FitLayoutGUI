@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 
 import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.views.ArtifactProviderPanel;
+import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.ontology.BOX;
 
 
@@ -72,7 +73,8 @@ public class BoxSourcePanel extends ArtifactProviderPanel
         if (i != -1)
         {
             var btp = getServiceCombo().getItemAt(i);
-            getBrowser().createAndAddArtifact(null, btp, getServiceParamsPanel().getParams());
+            Artifact a = getBrowser().createArtifact(null, btp, getServiceParamsPanel().getParams());
+            getBrowser().addArtifact(a);
         }
     }
     

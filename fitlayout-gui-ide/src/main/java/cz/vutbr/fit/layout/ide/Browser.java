@@ -90,18 +90,26 @@ public class Browser
     //=========================================================================
     
     /**
+     * Adds the artifact to the repository and updates the tree view.
+     * @param artifact the artifact to add
+     */
+    public void addArtifact(Artifact artifact)
+    {
+        repository.addArtifact(artifact);
+        window.updateArtifactTree();
+        window.selectArtifact(artifact);
+    }
+    
+    /**
      * Creates a new artifact using a configured provider and adds it to the browser.
      * @param parent parent artifact ot {@code null} for root artifacts (pages)
      * @param provider the provider to use for creating the artifact
      * @param params the provider params
      * @return the new artifact added or {@code null} when the page could not be created
      */
-    public Artifact createAndAddArtifact(Artifact parent, ArtifactService provider, Map<String, Object> params)
+    public Artifact createArtifact(Artifact parent, ArtifactService provider, Map<String, Object> params)
     {
         Artifact ret = processor.processArtifact(null, provider, params);
-        repository.addArtifact(ret);
-        window.updateArtifactTree();
-        window.selectArtifact(ret);
         return ret;
     }
     
@@ -111,7 +119,7 @@ public class Browser
      * @param provider
      * @return
      */
-    public Artifact createAndAddArtifact(ArtifactService provider)
+    public Artifact createArtifact(ArtifactService provider)
     {
         Artifact parent = null;
         if (provider.getConsumes() != null)
@@ -119,9 +127,6 @@ public class Browser
         if (parent != null)
         {
             Artifact result = provider.process(parent);
-            repository.addArtifact(result);
-            window.updateArtifactTree();
-            window.selectArtifact(result);
             return result;
         }
         else

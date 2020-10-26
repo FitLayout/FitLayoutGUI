@@ -17,6 +17,7 @@ import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.views.ArtifactProviderPanel;
 import cz.vutbr.fit.layout.impl.DefaultContentRect;
 import cz.vutbr.fit.layout.model.AreaTree;
+import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.ontology.SEGM;
 
 public class SegmentationPanel extends ArtifactProviderPanel
@@ -69,7 +70,8 @@ public class SegmentationPanel extends ArtifactProviderPanel
         if (getServiceCombo().getSelectedIndex() != -1)
         {
             ArtifactService provider = getServiceCombo().getItemAt(getServiceCombo().getSelectedIndex());
-            getBrowser().createAndAddArtifact(provider);
+            Artifact a = getBrowser().createArtifact(provider);
+            getBrowser().addArtifact(a);
         }
     }
     
