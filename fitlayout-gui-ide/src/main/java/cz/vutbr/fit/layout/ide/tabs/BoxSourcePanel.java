@@ -73,7 +73,7 @@ public class BoxSourcePanel extends ArtifactProviderPanel
         if (i != -1)
         {
             var btp = getServiceCombo().getItemAt(i);
-            Artifact a = getBrowser().createArtifact(null, btp, getServiceParamsPanel().getParams());
+            Artifact a = getBrowser().getProcessor().processArtifact(null, btp, getServiceParamsPanel().getParams());
             getBrowser().addArtifact(a);
         }
     }

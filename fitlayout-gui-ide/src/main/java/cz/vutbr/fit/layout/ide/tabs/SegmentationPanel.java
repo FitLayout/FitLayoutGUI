@@ -69,8 +69,13 @@ public class SegmentationPanel extends ArtifactProviderPanel
         DefaultContentRect.resetId(); //reset the default ID generator to obtain the same IDs for every segmentation
         if (getServiceCombo().getSelectedIndex() != -1)
         {
+            // create the area tree using the selected provider
             ArtifactService provider = getServiceCombo().getItemAt(getServiceCombo().getSelectedIndex());
-            Artifact a = getBrowser().createArtifact(provider);
+            Artifact a = getBrowser().getProcessor().createArtifact(getBrowser().getWindow().getSelectedArtifact(), provider);
+            // apply operators when auto-apply is on
+            if (getSegmAutorunCheckbox().isSelected())
+                getBrowser().getProcessor().applyOperators((AreaTree) a);
+            // add the new artifact
             getBrowser().addArtifact(a);
         }
     }
@@ -153,11 +158,11 @@ public class SegmentationPanel extends ArtifactProviderPanel
         	btnApply.addActionListener(new ActionListener() {
         	    public void actionPerformed(ActionEvent e)
         	    {
-        	        var atree = getBrowser().getNearestArtifact(SEGM.AreaTree);
+        	        /*var atree = getBrowser().getNearestArtifact(SEGM.AreaTree);
         	        if (atree != null)
         	        {
         	            getBrowser().getProcessor().applyOperators((AreaTree) atree);
-        	        }
+        	        }*/
         	    }
         	});
         }
