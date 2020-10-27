@@ -20,7 +20,6 @@ import cz.vutbr.fit.layout.ide.tabs.SegmentationTab;
 import cz.vutbr.fit.layout.ide.views.AreaTreeView;
 import cz.vutbr.fit.layout.ide.views.PageView;
 import cz.vutbr.fit.layout.model.Artifact;
-import cz.vutbr.fit.layout.process.GUIProcessor;
 import cz.vutbr.fit.layout.rdf.RDFArtifactRepository;
 import cz.vutbr.fit.layout.rdf.RDFStorage;
 

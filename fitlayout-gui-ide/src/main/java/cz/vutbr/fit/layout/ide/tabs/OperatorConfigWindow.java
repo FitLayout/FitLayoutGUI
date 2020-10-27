@@ -25,7 +25,7 @@ import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
 
 import cz.vutbr.fit.layout.api.AreaTreeOperator;
-import cz.vutbr.fit.layout.process.GUIProcessor;
+import cz.vutbr.fit.layout.ide.GUIProcessor;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
