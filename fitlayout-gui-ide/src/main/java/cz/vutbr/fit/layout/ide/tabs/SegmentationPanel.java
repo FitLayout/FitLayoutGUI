@@ -6,7 +6,11 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
+import java.util.Vector;
 
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -19,11 +23,14 @@ import cz.vutbr.fit.layout.impl.DefaultContentRect;
 import cz.vutbr.fit.layout.model.AreaTree;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.ontology.SEGM;
+import cz.vutbr.fit.layout.provider.OperatorApplicationProvider;
 
 public class SegmentationPanel extends ArtifactProviderPanel
 {
     private static final long serialVersionUID = 1L;
 
+    private OperatorApplicationProvider opProvider;
+    
     private JPanel segmChoicePanel;
     private JLabel lblSegmentator;
     private JButton segmRunButton;
@@ -82,6 +89,26 @@ public class SegmentationPanel extends ArtifactProviderPanel
     
     //====================================================================================================
     
+    @Override
+    protected ComboBoxModel<ArtifactService> createServiceComboModel(Map<String, ArtifactService> providerMap)
+    {
+        //filter out the OperatorApplicationProvider from the list of providers since it is activated
+        //separately using the Apply button
+        Vector<ArtifactService> providers = new Vector<>();
+        for (ArtifactService serv : providerMap.values())
+        {
+            if ("FitLayout.ApplyOperators".equals(serv.getId()) && serv instanceof OperatorApplicationProvider)
+            {
+                opProvider = (OperatorApplicationProvider) serv;
+            }
+            else
+            {
+                providers.add(serv);
+            }
+        }
+        return new DefaultComboBoxModel<ArtifactService>(providers);
+    }
+
     private JPanel getSegmChoicePanel()
     {
         if (segmChoicePanel == null)
@@ -158,11 +185,12 @@ public class SegmentationPanel extends ArtifactProviderPanel
         	btnApply.addActionListener(new ActionListener() {
         	    public void actionPerformed(ActionEvent e)
         	    {
-        	        /*var atree = getBrowser().getNearestArtifact(SEGM.AreaTree);
-        	        if (atree != null)
+        	        if (opProvider != null)
         	        {
-        	            getBrowser().getProcessor().applyOperators((AreaTree) atree);
-        	        }*/
+        	            Artifact art = getBrowser().getProcessor()
+        	                    .applyOperatorProvider(getBrowser().getWindow().getSelectedArtifact(), opProvider);
+        	            getBrowser().addArtifact(art);
+        	        }
         	    }
         	});
         }

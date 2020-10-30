@@ -7,8 +7,10 @@ package cz.vutbr.fit.layout.ide.views;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -67,13 +69,18 @@ public class ArtifactProviderPanel extends JPanel
                 }
             });
             var providerMap = browser.getProcessor().getArtifactProviders(artifactType);
-            var providers = new Vector<ArtifactService>(providerMap.values());
-            var model = new DefaultComboBoxModel<ArtifactService>(providers);
+            var model = createServiceComboModel(providerMap);
             serviceCombo.setModel(model);
         }
         return serviceCombo;
     }
 
+    protected ComboBoxModel<ArtifactService> createServiceComboModel(Map<String, ArtifactService> providerMap)
+    {
+        var providers = new Vector<ArtifactService>(providerMap.values());
+        return new DefaultComboBoxModel<ArtifactService>(providers);
+    }
+    
     protected ParamsPanel getServiceParamsPanel()
     {
         if (serviceParamsPanel == null)

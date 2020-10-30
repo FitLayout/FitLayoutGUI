@@ -17,6 +17,7 @@ import cz.vutbr.fit.layout.api.ArtifactService;
 import cz.vutbr.fit.layout.model.AreaTree;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.process.BaseProcessor;
+import cz.vutbr.fit.layout.provider.OperatorApplicationProvider;
 
 /**
  * 
@@ -83,16 +84,42 @@ public class GUIProcessor extends BaseProcessor
     
     //========================================================================================
     
+    /**
+     * Gets the list of operators selected using the GUI.
+     * @return a list of operators
+     */
     public List<AreaTreeOperator> getSelectedOperators()
     {
         return selectedOperators;
     }
 
+    /**
+     * Gets the list of operator parametres configured using the GUI.
+     * @return a list of operator parameter maps
+     */
     public List<Map<String, Object>> getOperatorParams()
     {
         return operatorParams;
     }
     
+    /**
+     * Configures all the selected operators using their parametres.
+     */
+    public void configureOperators()
+    {
+        for (int i = 0; i < selectedOperators.size(); i++)
+        {
+            var op = selectedOperators.get(i);
+            var params = operatorParams.get(i);
+            getServiceManager().setServiceParams(op, params);
+        }
+    }
+    
+    /**
+     * Apply the operators on the given area tree.
+     * @param src An area tree
+     * @return the same area tree with applied modifications
+     */
     public AreaTree applyOperators(AreaTree src)
     {
         for (int i = 0; i < selectedOperators.size(); i++)
@@ -102,6 +129,17 @@ public class GUIProcessor extends BaseProcessor
             apply(src, op, params);
         }
         return src;
+    }
+    
+    public AreaTree applyOperatorProvider(Artifact selectedArtifact, OperatorApplicationProvider opProvider)
+    {
+        // configure the provider
+        opProvider.setOperators(selectedOperators);
+        // configure the operators
+        configureOperators();
+        // create the artifact
+        Artifact art = createArtifact(selectedArtifact, opProvider);
+        return (AreaTree) art;
     }
 
     public void loadConfig()
