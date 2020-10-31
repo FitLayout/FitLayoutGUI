@@ -23,7 +23,7 @@ import org.eclipse.rdf4j.model.IRI;
 import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.misc.AreaTreeModel;
-import cz.vutbr.fit.layout.ide.misc.ArtifactTreeCellRenderer;
+import cz.vutbr.fit.layout.ide.misc.ContentTreeCellRenderer;
 import cz.vutbr.fit.layout.ide.misc.LogicalTreeModel;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.model.LogicalAreaTree;
@@ -141,7 +141,7 @@ public class LogicalTreeView extends ArtifactViewBase implements CanvasClickList
         if (areaJTree == null)
         {
             areaJTree = new JTree();
-            areaJTree.setCellRenderer(new ArtifactTreeCellRenderer());
+            areaJTree.setCellRenderer(new ContentTreeCellRenderer());
             areaJTree.setBackground(BGCOLOR);
             areaJTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener()
             {

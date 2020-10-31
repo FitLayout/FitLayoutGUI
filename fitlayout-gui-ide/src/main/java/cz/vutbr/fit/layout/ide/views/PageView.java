@@ -25,7 +25,7 @@ import org.eclipse.rdf4j.model.IRI;
 import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.Utils;
 import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
-import cz.vutbr.fit.layout.ide.misc.ArtifactTreeCellRenderer;
+import cz.vutbr.fit.layout.ide.misc.ContentTreeCellRenderer;
 import cz.vutbr.fit.layout.ide.misc.BoxTreeModel;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.model.Box;
@@ -215,7 +215,7 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
         {
             boxTree = new JTree();
             boxTree.setBackground(BGCOLOR);
-            boxTree.setCellRenderer(new ArtifactTreeCellRenderer());
+            boxTree.setCellRenderer(new ContentTreeCellRenderer());
             boxTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener()
             {
                 public void valueChanged(javax.swing.event.TreeSelectionEvent e)

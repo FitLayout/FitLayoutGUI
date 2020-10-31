@@ -30,7 +30,7 @@ import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.Utils;
 import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.misc.AreaTreeModel;
-import cz.vutbr.fit.layout.ide.misc.ArtifactTreeCellRenderer;
+import cz.vutbr.fit.layout.ide.misc.ContentTreeCellRenderer;
 import cz.vutbr.fit.layout.impl.DefaultTag;
 import cz.vutbr.fit.layout.model.Area;
 import cz.vutbr.fit.layout.model.AreaTree;
@@ -370,7 +370,7 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
         if (areaJTree == null)
         {
             areaJTree = new JTree();
-            areaJTree.setCellRenderer(new ArtifactTreeCellRenderer());
+            areaJTree.setCellRenderer(new ContentTreeCellRenderer());
             areaJTree.setBackground(BGCOLOR);
             areaJTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener()
             {

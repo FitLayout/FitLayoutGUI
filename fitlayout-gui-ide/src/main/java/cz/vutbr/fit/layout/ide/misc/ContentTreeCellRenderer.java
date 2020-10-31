@@ -13,7 +13,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
  * 
  * @author burgetr
  */
-public class ArtifactTreeCellRenderer extends DefaultTreeCellRenderer
+public class ContentTreeCellRenderer extends DefaultTreeCellRenderer
 {
     private static final long serialVersionUID = 1L;
 
