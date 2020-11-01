@@ -90,7 +90,7 @@ public class ArtifactTreeCellRenderer extends DefaultTreeCellRenderer
         if (art.getCreator() != null)
             ret += "<b>Creator:</b> " + art.getCreator() + "<br>";
         if (art.getCreatorParams() != null)
-            ret += "<b>Params:</b> " + art.getCreator() + "<br>";
+            ret += "<b>Params:</b> " + art.getCreatorParams() + "<br>";
         if (art.getCreatedOn() != null)
             ret += "<i>Created on " + DateFormat.getDateTimeInstance().format(art.getCreatedOn()) + "</i>";
         ret += "";

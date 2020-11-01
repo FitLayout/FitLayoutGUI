@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +65,7 @@ public class ArtifactTreeModel extends DefaultTreeModel
     {
         Collection<IRI> iris = repo.getArtifactIRIs();
         // collect new nodes to add
-        Set<Artifact> toAdd = new HashSet<>();
+        Set<Artifact> toAdd = new LinkedHashSet<>();
         for (IRI iri : iris)
         {
             if (!nodeMap.containsKey(iri))

@@ -42,8 +42,8 @@ public class Browser
     public Browser()
     {
         //repository = new DefaultArtifactRepository();
-        RDFStorage storage = RDFStorage.createNative(System.getProperty("user.home") + "/.fitlayout/storage");
-        //RDFStorage storage = RDFStorage.createHTTP("http://localhost:8080/rdf4j-server", "fitlayout2");
+        //RDFStorage storage = RDFStorage.createNative(System.getProperty("user.home") + "/.fitlayout/storage");
+        RDFStorage storage = RDFStorage.createHTTP("http://localhost:8080/rdf4j-server", "fitlayout2");
         repository = new RDFArtifactRepository(storage);
         processor = new GUIProcessor(repository);
     }
