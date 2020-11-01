@@ -20,6 +20,7 @@ import cz.vutbr.fit.layout.ide.api.AreaSelectionListener;
 import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.api.RectangleSelectionListener;
 import cz.vutbr.fit.layout.ide.api.TreeListener;
+import cz.vutbr.fit.layout.ide.misc.ArtifactTreeCellRenderer;
 import cz.vutbr.fit.layout.ide.misc.ArtifactTreeModel;
 import cz.vutbr.fit.layout.ide.tabs.BrowserPanel;
 import cz.vutbr.fit.layout.ide.tabs.BrowserTab;
@@ -76,6 +77,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.ToolTipManager;
+
 import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -1093,6 +1096,7 @@ public class BrowserWindow
         {
             artifactTreeRoot = new DefaultMutableTreeNode("Pages");
             artifactTree = new JTree(artifactTreeRoot);
+            artifactTree.setCellRenderer(new ArtifactTreeCellRenderer(browser.getRepository().getIriDecoder()));
             artifactTree.addTreeSelectionListener(new TreeSelectionListener()
             {
                 public void valueChanged(TreeSelectionEvent e)
@@ -1102,6 +1106,7 @@ public class BrowserWindow
                         artifactSelected(a);
                 }
             });
+            ToolTipManager.sharedInstance().registerComponent(artifactTree);
         }
         return artifactTree;
     }
