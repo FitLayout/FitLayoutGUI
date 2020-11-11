@@ -19,6 +19,7 @@ import cz.vutbr.fit.layout.ide.tabs.BoxTreeTab;
 import cz.vutbr.fit.layout.ide.tabs.SegmentationTab;
 import cz.vutbr.fit.layout.ide.views.AreaTreeView;
 import cz.vutbr.fit.layout.ide.views.PageView;
+import cz.vutbr.fit.layout.impl.DefaultArtifactRepository;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.rdf.RDFArtifactRepository;
 import cz.vutbr.fit.layout.rdf.RDFStorage;
@@ -41,10 +42,10 @@ public class Browser
     
     public Browser()
     {
-        //repository = new DefaultArtifactRepository();
+        repository = new DefaultArtifactRepository();
         //RDFStorage storage = RDFStorage.createNative(System.getProperty("user.home") + "/.fitlayout/storage");
-        RDFStorage storage = RDFStorage.createHTTP("http://localhost:8080/rdf4j-server", "fitlayout2");
-        repository = new RDFArtifactRepository(storage);
+        //RDFStorage storage = RDFStorage.createHTTP("http://localhost:8080/rdf4j-server", "fitlayout2");
+        //repository = new RDFArtifactRepository(storage);
         processor = new GUIProcessor(repository);
     }
     
@@ -162,6 +163,7 @@ public class Browser
                     browser.initGUI();
                     
                     //urlstring = "http://www.reuters.com/article/2014/03/28/us-trading-momentum-analysis-idUSBREA2R09M20140328";
+                    String urlstring = "http://cssbox.sf.net";
                     if (urlstring != null)
                     {
                         URL url = new URL(urlstring);
