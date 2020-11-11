@@ -153,6 +153,7 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
         vals.add(infoTableData("Bg color", Utils.colorString(box.getBackgroundColor())));
         vals.add(infoTableData("Borders", Utils.borderString(box)));
         vals.add(infoTableData("Bg separated", (box.isBackgroundSeparated()) ? "true" : "false"));
+        //vals.add(infoTableData("V. separated", (box.isVisuallySeparated()) ? "true" : "false"));
         
         vals.add(infoTableData("Font", box.getFontFamily()));
         vals.add(infoTableData("Font size", String.valueOf(box.getTextStyle().getFontSize())));
