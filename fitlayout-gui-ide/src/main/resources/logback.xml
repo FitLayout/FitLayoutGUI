@@ -6,7 +6,7 @@
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<!-- <pattern>%-5level %logger{36} - %msg</pattern> -->
-			<pattern>%-5level %logger - %msg</pattern>
+			<pattern>%-5level %logger - %msg%n</pattern>
 		</encoder>
 	</appender>
 
