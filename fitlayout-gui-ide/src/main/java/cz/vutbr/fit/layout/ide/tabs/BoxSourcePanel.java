@@ -4,11 +4,13 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.net.MalformedURLException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import cz.vutbr.fit.layout.api.ServiceException;
 import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.views.ArtifactProviderPanel;
 import cz.vutbr.fit.layout.model.Artifact;
@@ -73,8 +75,16 @@ public class BoxSourcePanel extends ArtifactProviderPanel
         if (i != -1)
         {
             var btp = getServiceCombo().getItemAt(i);
-            Artifact a = getBrowser().getProcessor().processArtifact(null, btp, getServiceParamsPanel().getParams());
-            getBrowser().addArtifact(a);
+            try {
+                Artifact a = getBrowser().getProcessor().processArtifact(null, btp, getServiceParamsPanel().getParams());
+                getBrowser().addArtifact(a);
+            } catch (ServiceException e) {
+                Throwable re = e.getCause();
+                if (re instanceof MalformedURLException)
+                    getBrowser().getWindow().displayErrorMessage("Malformed URL");
+                else
+                    getBrowser().getWindow().displayErrorMessage("Rendering failed: " + e.getMessage());
+            }
         }
     }
     
