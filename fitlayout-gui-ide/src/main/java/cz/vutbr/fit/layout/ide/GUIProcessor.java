@@ -14,6 +14,7 @@ import org.eclipse.rdf4j.model.IRI;
 import cz.vutbr.fit.layout.api.AreaTreeOperator;
 import cz.vutbr.fit.layout.api.ArtifactRepository;
 import cz.vutbr.fit.layout.api.ArtifactService;
+import cz.vutbr.fit.layout.ide.config.IdeConfig;
 import cz.vutbr.fit.layout.model.AreaTree;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.process.BaseProcessor;
@@ -142,11 +143,11 @@ public class GUIProcessor extends BaseProcessor
         return (AreaTree) art;
     }
 
+    //========================================================================================
+    
     public void loadConfig()
     {
         //TODO
     }
-    
-    //========================================================================================
     
 }

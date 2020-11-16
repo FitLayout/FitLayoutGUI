@@ -5,6 +5,8 @@
  */
 package cz.vutbr.fit.layout.ide.tabs;
 
+import java.util.Map;
+
 import javax.swing.JPanel;
 
 /**
@@ -41,4 +43,17 @@ public interface BrowserTab
      */
     public void reloadServiceParams();
 
+    /**
+     * Returns the represenation of the current tab state. This may be used
+     * for storing the tab configuration.
+     * @return A map representing the tab state. The keys and their values depend on the tab implementation.
+     */
+    public Map<String, Object> getState();
+    
+    /**
+     * Configures the tab according to the new state.
+     * @param state the new state
+     */
+    public void setState(Map<String, Object> state);
+    
 }

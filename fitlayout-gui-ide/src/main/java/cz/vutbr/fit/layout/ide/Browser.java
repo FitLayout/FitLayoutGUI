@@ -6,16 +6,27 @@
 package cz.vutbr.fit.layout.ide;
 
 import java.awt.EventQueue;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cz.vutbr.fit.layout.api.ArtifactRepository;
+import cz.vutbr.fit.layout.api.ParametrizedOperation;
+import cz.vutbr.fit.layout.api.ServiceManager;
+import cz.vutbr.fit.layout.ide.config.IdeConfig;
+import cz.vutbr.fit.layout.ide.config.ServiceConfig;
+import cz.vutbr.fit.layout.ide.config.TabConfig;
 import cz.vutbr.fit.layout.ide.tabs.BoxSourcePanel;
 import cz.vutbr.fit.layout.ide.tabs.BoxTreeTab;
+import cz.vutbr.fit.layout.ide.tabs.BrowserTabState;
 import cz.vutbr.fit.layout.ide.tabs.SegmentationTab;
 import cz.vutbr.fit.layout.ide.views.AreaTreeView;
 import cz.vutbr.fit.layout.ide.views.PageView;
@@ -30,7 +41,11 @@ import cz.vutbr.fit.layout.rdf.RDFStorage;
  */
 public class Browser
 {
-    //private static Logger log = LoggerFactory.getLogger(Browser.class);
+    private static Logger log = LoggerFactory.getLogger(Browser.class);
+    
+    public static final String configDir = System.getProperty("user.home") + "/.fitlayout";
+    
+    private ConfigFile configFile;
     
     private BrowserWindow window;
     private BoxTreeTab boxTreeTab;
@@ -42,11 +57,12 @@ public class Browser
     
     public Browser()
     {
-        repository = new DefaultArtifactRepository();
-        //RDFStorage storage = RDFStorage.createNative(System.getProperty("user.home") + "/.fitlayout/storage");
-        //RDFStorage storage = RDFStorage.createHTTP("http://localhost:8080/rdf4j-server", "fitlayout2");
-        //repository = new RDFArtifactRepository(storage);
-        processor = new GUIProcessor(repository);
+    }
+    
+    public void init()
+    {
+        configFile = new ConfigFile();
+        loadConfig();
     }
     
     public BrowserWindow getWindow()
@@ -80,6 +96,12 @@ public class Browser
     {
         ((BoxSourcePanel) boxTreeTab.getTabPanel()).setUrl(url);
         ((BoxSourcePanel) boxTreeTab.getTabPanel()).displaySelectedURL();
+    }
+    
+    public void exit(int exitcode)
+    {
+        saveConfig();
+        System.exit(exitcode);
     }
     
     //=========================================================================
@@ -120,6 +142,68 @@ public class Browser
     
     //=========================================================================
     
+    public void saveConfig()
+    {
+        IdeConfig config = new IdeConfig();
+        //store service params
+        Map<String, ParametrizedOperation> services = getProcessor().getServiceManager().getParametrizedServices();
+        config.services = new ServiceConfig[services.keySet().size()];
+        int i = 0;
+        for (Map.Entry<String, ParametrizedOperation> entry : services.entrySet())
+        {
+            ServiceConfig sconf = new ServiceConfig();
+            sconf.id = entry.getKey();
+            sconf.params = getProcessor().getServiceManager().getServiceParams(entry.getValue());
+            config.services[i++] = sconf;
+        }
+        //store tab states
+        config.tabs = new TabConfig[window.getTabStates().size()];
+        i = 0;
+        for (BrowserTabState tabState : window.getTabStates())
+        {
+            config.tabs[i++] = tabState.getTabConfig();
+        }
+        //save
+        try
+        {
+            configFile.save(config);
+        } catch (IOException e) {
+            log.error("Couldn't save GUI config: {}", e.getMessage());
+        }
+    }
+    
+    public void loadConfig()
+    {
+        try
+        {
+            IdeConfig config = configFile.load();
+            //load repository config TODO
+            loadDefaults();
+            //restore service params
+            for (ServiceConfig sconf : config.services)
+            {
+                final ServiceManager sm = getProcessor().getServiceManager(); 
+                var op = sm.findParmetrizedService(sconf.id);
+                sm.setServiceParams(op, sconf.params);
+            }
+            
+        } catch (IOException e) {
+            log.warn("Couldn't load GUI config file: {}. Using defaults.", e.getMessage());
+            loadDefaults();
+        }
+    }
+    
+    public void loadDefaults()
+    {
+        repository = new DefaultArtifactRepository();
+        //RDFStorage storage = RDFStorage.createNative(System.getProperty("user.home") + "/.fitlayout/storage");
+        //RDFStorage storage = RDFStorage.createHTTP("http://localhost:8080/rdf4j-server", "fitlayout2");
+        //repository = new RDFArtifactRepository(storage);
+        processor = new GUIProcessor(repository);
+    }
+    
+    //=========================================================================
+    
     /**
      * A place for adding custom GUI component to the main window
      */
@@ -143,6 +227,20 @@ public class Browser
         //add artifact views
         window.addArtifactView(new PageView(this));
         window.addArtifactView(new AreaTreeView(this));
+        
+        //restore tab states if available
+        if (configFile != null && configFile.getLoadedConfig() != null && configFile.getLoadedConfig().tabs != null)
+        {
+            for (TabConfig tconf : configFile.getLoadedConfig().tabs)
+            {
+                for (BrowserTabState tabState : window.getTabStates())
+                {
+                    if (tabState.setTabConfig(tconf))
+                        break;
+                }
+            }
+        }
+
     }
 
     //=========================================================================
@@ -160,10 +258,10 @@ public class Browser
                 try
                 {
                     var browser = new Browser();
+                    browser.init();
                     browser.initGUI();
                     
                     //urlstring = "http://www.reuters.com/article/2014/03/28/us-trading-momentum-analysis-idUSBREA2R09M20140328";
-                    String urlstring = "http://cssbox.sf.net";
                     if (urlstring != null)
                     {
                         URL url = new URL(urlstring);

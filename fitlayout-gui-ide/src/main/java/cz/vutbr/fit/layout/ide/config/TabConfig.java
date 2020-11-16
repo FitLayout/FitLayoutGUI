@@ -5,11 +5,15 @@
  */
 package cz.vutbr.fit.layout.ide.config;
 
+import java.util.Map;
+
 /**
  * 
  * @author burgetr
  */
 public class TabConfig
 {
-
+    public String id;
+    public boolean visible;
+    public Map<String, Object> state;
 }

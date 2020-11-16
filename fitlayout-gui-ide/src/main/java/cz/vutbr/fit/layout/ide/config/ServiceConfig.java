@@ -5,11 +5,14 @@
  */
 package cz.vutbr.fit.layout.ide.config;
 
+import java.util.Map;
+
 /**
  * 
  * @author burgetr
  */
 public class ServiceConfig
 {
-
+    public String id;
+    public Map<String, Object> params;
 }

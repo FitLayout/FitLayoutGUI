@@ -291,6 +291,11 @@ public class BrowserWindow
     
     //================================================================================================================================
     
+    public List<BrowserTabState> getTabStates()
+    {
+        return browserTabs;
+    }
+    
     public void addTab(BrowserTab tab, boolean optional, boolean visible)
     {
         BrowserTabState state = new BrowserTabState(tab, optional);
@@ -630,7 +635,7 @@ public class BrowserWindow
                 public void windowClosing(java.awt.event.WindowEvent e)
                 {
                     mainWindow.setVisible(false);
-                    System.exit(0);
+                    browser.exit(0);
                 }
             });
         }
@@ -1157,7 +1162,7 @@ public class BrowserWindow
                 public void actionPerformed(ActionEvent e)
                 {
                     mainWindow.setVisible(false);
-                    System.exit(0);
+                    browser.exit(0);
                 }
             });
             mntmQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_DOWN_MASK));

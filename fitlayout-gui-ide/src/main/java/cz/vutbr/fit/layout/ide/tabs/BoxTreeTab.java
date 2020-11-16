@@ -5,8 +5,12 @@
  */
 package cz.vutbr.fit.layout.ide.tabs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.JPanel;
 
+import cz.vutbr.fit.layout.api.ArtifactService;
 import cz.vutbr.fit.layout.ide.Browser;
 
 /**
@@ -41,6 +45,26 @@ public class BoxTreeTab extends BrowserTabBase
     public void reloadServiceParams()
     {
         boxSourcePanel.reloadServiceParams();
+    }
+
+    @Override
+    public Map<String, Object> getState()
+    {
+        Map<String, Object> ret = new HashMap<>();
+        ArtifactService selected = boxSourcePanel.getSelectedProvider();
+        if (selected != null)
+            ret.put("service", selected.getId());
+        return ret;
+    }
+
+    @Override
+    public void setState(Map<String, Object> state)
+    {
+        Object serviceId = state.get("service");
+        if (serviceId != null && serviceId instanceof String)
+        {
+            boxSourcePanel.setSelectedProviderId((String) serviceId);
+        }
     }
     
 }

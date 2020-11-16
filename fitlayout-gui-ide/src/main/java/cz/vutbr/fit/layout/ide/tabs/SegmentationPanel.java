@@ -87,6 +87,16 @@ public class SegmentationPanel extends ArtifactProviderPanel
         }
     }
     
+    public boolean isAutoRun()
+    {
+        return getSegmAutorunCheckbox().isSelected();
+    }
+    
+    public void setAutoRun(boolean state)
+    {
+        getSegmAutorunCheckbox().setSelected(state);
+    }
+    
     //====================================================================================================
     
     @Override

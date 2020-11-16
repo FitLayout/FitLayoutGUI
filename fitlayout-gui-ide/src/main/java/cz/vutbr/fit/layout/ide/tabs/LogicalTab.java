@@ -5,6 +5,9 @@
  */
 package cz.vutbr.fit.layout.ide.tabs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.JPanel;
 
 import cz.vutbr.fit.layout.ide.Browser;
@@ -42,4 +45,17 @@ public class LogicalTab extends BrowserTabBase
         // TODO Auto-generated method stub
         
     }
+    
+    @Override
+    public Map<String, Object> getState()
+    {
+        Map<String, Object> ret = new HashMap<>();
+        return ret;
+    }
+
+    @Override
+    public void setState(Map<String, Object> state)
+    {
+    }
+
 }

@@ -56,6 +56,29 @@ public class ArtifactProviderPanel extends JPanel
         return artifactType;
     }
 
+    public ArtifactService getSelectedProvider()
+    {
+        int i = getServiceCombo().getSelectedIndex();
+        if (i != -1)
+            return getServiceCombo().getItemAt(i);
+        else
+            return null;
+    }
+    
+    public boolean setSelectedProviderId(String id)
+    {
+        for (int i = 0; i < getServiceCombo().getItemCount(); i++)
+        {
+            ArtifactService op = getServiceCombo().getItemAt(i);
+            if (op.getId().equals(id))
+            {
+                getServiceCombo().setSelectedIndex(i);
+                return true;
+            }
+        }
+        return false;
+    }
+    
     protected JComboBox<ArtifactService> getServiceCombo()
     {
         if (serviceCombo == null)
