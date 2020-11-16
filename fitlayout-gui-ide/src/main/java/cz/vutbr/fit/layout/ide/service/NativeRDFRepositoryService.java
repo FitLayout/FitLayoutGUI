@@ -68,7 +68,7 @@ public class NativeRDFRepositoryService extends BaseRepositoryService
     @Override
     public ArtifactRepository createRepository()
     {
-        RDFStorage storage = RDFStorage.createNative(System.getProperty("user.home") + "/.fitlayout/storage");
+        RDFStorage storage = RDFStorage.createNative(dataDir);
         return new RDFArtifactRepository(storage);
     }
 

@@ -68,7 +68,7 @@ public class MemoryRDFRepositoryService extends BaseRepositoryService
     @Override
     public ArtifactRepository createRepository()
     {
-        RDFStorage storage = RDFStorage.createMemory(System.getProperty("user.home") + "/.fitlayout/storage");
+        RDFStorage storage = RDFStorage.createMemory(dataDir);
         return new RDFArtifactRepository(storage);
     }
 
