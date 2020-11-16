@@ -23,7 +23,7 @@ import org.eclipse.rdf4j.model.IRI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.vutbr.fit.layout.api.ArtifactRepository;
+import cz.vutbr.fit.layout.ide.GUIProcessor;
 import cz.vutbr.fit.layout.model.Artifact;
 
 /**
@@ -36,14 +36,14 @@ public class ArtifactTreeModel extends DefaultTreeModel
     private static final long serialVersionUID = 1L;
     private static Logger log = LoggerFactory.getLogger(ArtifactTreeModel.class);
     
-    private ArtifactRepository repo;
+    private GUIProcessor proc;
     private Map<IRI, DefaultMutableTreeNode> nodeMap;
     
 
-    public ArtifactTreeModel(ArtifactRepository repo)
+    public ArtifactTreeModel(GUIProcessor proc)
     {
         super(new DefaultMutableTreeNode("Pages"));
-        this.repo = repo;
+        this.proc = proc;
         nodeMap = new HashMap<>();
         updateArtifactTree();
     }
@@ -63,14 +63,14 @@ public class ArtifactTreeModel extends DefaultTreeModel
      */
     public void updateArtifactTree()
     {
-        Collection<IRI> iris = repo.getArtifactIRIs();
+        Collection<IRI> iris = proc.getRepository().getArtifactIRIs();
         // collect new nodes to add
         Set<Artifact> toAdd = new LinkedHashSet<>();
         for (IRI iri : iris)
         {
             if (!nodeMap.containsKey(iri))
             {
-                Artifact a = repo.getArtifact(iri);
+                Artifact a = proc.getRepository().getArtifact(iri);
                 if (a != null)
                     toAdd.add(a);
                 else

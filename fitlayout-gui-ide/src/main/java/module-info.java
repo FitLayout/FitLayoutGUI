@@ -6,10 +6,11 @@ module cz.vutbr.fit.layout.ide
     requires rdf4j.onejar;
     requires com.google.gson;
     
-    requires cz.vutbr.fit.layout.core;
+    requires transitive cz.vutbr.fit.layout.core;
     requires cz.vutbr.fit.layout.segm;
     requires cz.vutbr.fit.layout.tools;
     requires cz.vutbr.fit.layout.rdf;
     
     exports cz.vutbr.fit.layout.ide.config;
+    exports cz.vutbr.fit.layout.ide.service;
 }

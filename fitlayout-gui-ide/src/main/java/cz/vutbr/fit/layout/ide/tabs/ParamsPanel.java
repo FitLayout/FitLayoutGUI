@@ -20,7 +20,6 @@ import javax.swing.event.DocumentListener;
 
 import cz.vutbr.fit.layout.api.Parameter;
 import cz.vutbr.fit.layout.api.ParametrizedOperation;
-import cz.vutbr.fit.layout.api.ServiceManager;
 import cz.vutbr.fit.layout.impl.ParameterBoolean;
 import cz.vutbr.fit.layout.impl.ParameterFloat;
 import cz.vutbr.fit.layout.impl.ParameterInt;
@@ -36,7 +35,6 @@ public class ParamsPanel extends JPanel implements ChangeListener, DocumentListe
 {
     private static final long serialVersionUID = 1L;
     
-    private ServiceManager serviceManager;
     private ParametrizedOperation op;
     private Map<String, Object> params;
     private boolean directMode;
@@ -45,10 +43,9 @@ public class ParamsPanel extends JPanel implements ChangeListener, DocumentListe
     private Map<String, Component> fields;
     private boolean autosave = true;
     
-    public ParamsPanel(ServiceManager serviceManager)
+    public ParamsPanel()
     {
         super();
-        this.serviceManager = serviceManager;
         op = null;
         params = null;
         directMode = true;
@@ -81,7 +78,7 @@ public class ParamsPanel extends JPanel implements ChangeListener, DocumentListe
         this.op = op;
         if (params == null)
         {
-            this.params = serviceManager.getServiceParams(op);
+            this.params = getServiceParams(op);
             directMode = true;
         }
         else
@@ -208,10 +205,20 @@ public class ParamsPanel extends JPanel implements ChangeListener, DocumentListe
         {
             boolean a = autosave;
             autosave = false;
-            this.params = serviceManager.getServiceParams(op);
+            this.params = getServiceParams(op);
             setParams(this.params);
             autosave = a;
         }
+    }
+    
+    private Map<String, Object> getServiceParams(ParametrizedOperation op)
+    {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        for (Parameter param : op.getParams())
+        {
+            ret.put(param.getName(), op.getParam(param.getName()));
+        }
+        return ret;
     }
     
     //======================================================================================

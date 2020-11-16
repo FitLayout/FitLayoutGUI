@@ -25,6 +25,7 @@ import cz.vutbr.fit.layout.ide.misc.ArtifactTreeModel;
 import cz.vutbr.fit.layout.ide.tabs.BrowserPanel;
 import cz.vutbr.fit.layout.ide.tabs.BrowserTab;
 import cz.vutbr.fit.layout.ide.tabs.BrowserTabState;
+import cz.vutbr.fit.layout.ide.tabs.RepositoryConfigDialog;
 import cz.vutbr.fit.layout.ide.views.ArtifactView;
 import cz.vutbr.fit.layout.model.Area;
 import cz.vutbr.fit.layout.model.Artifact;
@@ -158,6 +159,7 @@ public class BrowserWindow
     private JTabbedPane artifactViewTabs;
     private JPanel artifactToolsPanel;
     private JButton btnDeleteArtifact;
+    private JButton btnRepository;
 
 
     public BrowserWindow(Browser browser)
@@ -175,7 +177,7 @@ public class BrowserWindow
     
     public void init()
     {
-        setArtifactTreeModel(new ArtifactTreeModel(browser.getRepository()));
+        setArtifactTreeModel(new ArtifactTreeModel(browser.getProcessor()));
     }
     
     //=============================================================================================================
@@ -1185,12 +1187,57 @@ public class BrowserWindow
         if (artifactToolsPanel == null)
         {
             artifactToolsPanel = new JPanel();
-            FlowLayout flowLayout = (FlowLayout) artifactToolsPanel.getLayout();
-            flowLayout.setVgap(2);
-            flowLayout.setAlignment(FlowLayout.RIGHT);
-            artifactToolsPanel.add(getBtnDeleteArtifact());
+            GridBagLayout gbl_artifactToolsPanel = new GridBagLayout();
+            gbl_artifactToolsPanel.rowHeights = new int[]{26, 0};
+            gbl_artifactToolsPanel.columnWeights = new double[]{0.0, 1.0, 0.0};
+            gbl_artifactToolsPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+            artifactToolsPanel.setLayout(gbl_artifactToolsPanel);
+            GridBagConstraints gbc_btnRepository = new GridBagConstraints();
+            gbc_btnRepository.anchor = GridBagConstraints.WEST;
+            gbc_btnRepository.insets = new Insets(2, 5, 2, 5);
+            gbc_btnRepository.gridx = 0;
+            gbc_btnRepository.gridy = 0;
+            artifactToolsPanel.add(getBtnRepository(), gbc_btnRepository);
+            GridBagConstraints gbc_paddingPanel = new GridBagConstraints();
+            gbc_paddingPanel.insets = new Insets(0, 0, 0, 5);
+            gbc_paddingPanel.fill = GridBagConstraints.BOTH;
+            gbc_paddingPanel.gridx = 1;
+            gbc_paddingPanel.gridy = 0;
+            artifactToolsPanel.add(new JPanel(), gbc_paddingPanel);
+            GridBagConstraints gbc_btnDeleteArtifact = new GridBagConstraints();
+            gbc_btnDeleteArtifact.anchor = GridBagConstraints.EAST;
+            gbc_btnDeleteArtifact.insets = new Insets(2, 5, 2, 5);
+            gbc_btnDeleteArtifact.gridx = 2;
+            gbc_btnDeleteArtifact.gridy = 0;
+            artifactToolsPanel.add(getBtnDeleteArtifact(), gbc_btnDeleteArtifact);
         }
         return artifactToolsPanel;
+    }
+
+    private JButton getBtnRepository()
+    {
+        if (btnRepository == null)
+        {
+            btnRepository = new JButton("R");
+            btnRepository.setToolTipText("Configure repository");
+            btnRepository.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    var repoDialog = new RepositoryConfigDialog(mainWindow, browser, browser.loadRepositoryServices());
+                    repoDialog.setVisible(true);
+                }
+            });
+            btnRepository.setMargin(new Insets(2, 5, 2, 5));
+            try {
+                Image img = ImageIO.read(
+                        BrowserWindow.class.getResource("/icons/storage16.png"));
+                btnRepository.setIcon(new ImageIcon(img));
+                btnRepository.setText(null);
+            } catch (Exception e) {
+                log.error("Couldn't load icon: {}", e.getMessage());
+            }
+        }
+        return btnRepository;
     }
 
     private JButton getBtnDeleteArtifact()
@@ -1198,6 +1245,7 @@ public class BrowserWindow
         if (btnDeleteArtifact == null)
         {
             btnDeleteArtifact = new JButton("D");
+            btnDeleteArtifact.setToolTipText("Delete artifact");
             btnDeleteArtifact.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {

@@ -108,7 +108,7 @@ public class ArtifactProviderPanel extends JPanel
     {
         if (serviceParamsPanel == null)
         {
-            serviceParamsPanel = new ParamsPanel(browser.getProcessor().getServiceManager());
+            serviceParamsPanel = new ParamsPanel();
         }
         return serviceParamsPanel;
     }

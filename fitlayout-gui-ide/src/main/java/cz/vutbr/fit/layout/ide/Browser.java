@@ -8,7 +8,9 @@ package cz.vutbr.fit.layout.ide;
 import java.awt.EventQueue;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
@@ -24,6 +26,10 @@ import cz.vutbr.fit.layout.api.ServiceManager;
 import cz.vutbr.fit.layout.ide.config.IdeConfig;
 import cz.vutbr.fit.layout.ide.config.ServiceConfig;
 import cz.vutbr.fit.layout.ide.config.TabConfig;
+import cz.vutbr.fit.layout.ide.service.BasicRepositoryService;
+import cz.vutbr.fit.layout.ide.service.MemoryRDFRepositoryService;
+import cz.vutbr.fit.layout.ide.service.NativeRDFRepositoryService;
+import cz.vutbr.fit.layout.ide.service.RepositoryService;
 import cz.vutbr.fit.layout.ide.tabs.BoxSourcePanel;
 import cz.vutbr.fit.layout.ide.tabs.BoxTreeTab;
 import cz.vutbr.fit.layout.ide.tabs.BrowserTabState;
@@ -32,8 +38,6 @@ import cz.vutbr.fit.layout.ide.views.AreaTreeView;
 import cz.vutbr.fit.layout.ide.views.PageView;
 import cz.vutbr.fit.layout.impl.DefaultArtifactRepository;
 import cz.vutbr.fit.layout.model.Artifact;
-import cz.vutbr.fit.layout.rdf.RDFArtifactRepository;
-import cz.vutbr.fit.layout.rdf.RDFStorage;
 
 /**
  * 
@@ -46,6 +50,7 @@ public class Browser
     public static final String configDir = System.getProperty("user.home") + "/.fitlayout";
     
     private ConfigFile configFile;
+    List<RepositoryService> repoServices;
     
     private BrowserWindow window;
     private BoxTreeTab boxTreeTab;
@@ -61,6 +66,8 @@ public class Browser
     
     public void init()
     {
+        processor = new GUIProcessor();
+        repoServices = loadRepositoryServices();
         configFile = new ConfigFile();
         loadConfig();
     }
@@ -199,7 +206,30 @@ public class Browser
         //RDFStorage storage = RDFStorage.createNative(System.getProperty("user.home") + "/.fitlayout/storage");
         //RDFStorage storage = RDFStorage.createHTTP("http://localhost:8080/rdf4j-server", "fitlayout2");
         //repository = new RDFArtifactRepository(storage);
-        processor = new GUIProcessor(repository);
+        processor.setRepository(repository);
+    }
+    
+    /**
+     * Adds the repository services to the central service manager.
+     * @return
+     */
+    public List<RepositoryService> loadRepositoryServices()
+    {
+        List<RepositoryService> ret = new ArrayList<>();
+        ret.add(new BasicRepositoryService());
+        ret.add(new MemoryRDFRepositoryService());
+        ret.add(new NativeRDFRepositoryService());
+        return ret;
+    }
+    
+    public void connectRepository(ArtifactRepository repository)
+    {
+        if (processor.getRepository() != null)
+        {
+            //TODO disconnect the previously used repo
+        }
+        processor.setRepository(repository);
+        window.updateArtifactTree();
     }
     
     //=========================================================================

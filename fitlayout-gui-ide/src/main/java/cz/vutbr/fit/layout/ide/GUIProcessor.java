@@ -12,9 +12,7 @@ import java.util.Map;
 import org.eclipse.rdf4j.model.IRI;
 
 import cz.vutbr.fit.layout.api.AreaTreeOperator;
-import cz.vutbr.fit.layout.api.ArtifactRepository;
 import cz.vutbr.fit.layout.api.ArtifactService;
-import cz.vutbr.fit.layout.ide.config.IdeConfig;
 import cz.vutbr.fit.layout.model.AreaTree;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.process.BaseProcessor;
@@ -31,14 +29,13 @@ public class GUIProcessor extends BaseProcessor
     private List<AreaTreeOperator> selectedOperators;
     private List<Map<String, Object>> operatorParams;
     
-    public GUIProcessor(ArtifactRepository repository)
+    public GUIProcessor()
     {
-        super(repository);
+        super();
         selectedOperators = new ArrayList<AreaTreeOperator>();
         operatorParams = new ArrayList<Map<String, Object>>();
-        loadConfig();
     }
-    
+
     /**
      * Creates a new artifact from the nearest applicable parent using the given provider
      * and adds the new artifact to the artifact tree.
@@ -143,11 +140,4 @@ public class GUIProcessor extends BaseProcessor
         return (AreaTree) art;
     }
 
-    //========================================================================================
-    
-    public void loadConfig()
-    {
-        //TODO
-    }
-    
 }

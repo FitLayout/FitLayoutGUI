@@ -217,7 +217,7 @@ public class OperatorConfigWindow extends JFrame
         javax.swing.ToolTipManager.sharedInstance().registerComponent(availList);
         availScroll.setViewportView(availList);
         
-        paramsPanel = new ParamsPanel(proc.getServiceManager());
+        paramsPanel = new ParamsPanel();
         GridBagConstraints gbc_paramsPanel = new GridBagConstraints();
         gbc_paramsPanel.insets = new Insets(0, 0, 5, 0);
         gbc_paramsPanel.gridwidth = 3;
