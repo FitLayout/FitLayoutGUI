@@ -27,6 +27,7 @@ import cz.vutbr.fit.layout.ide.config.IdeConfig;
 import cz.vutbr.fit.layout.ide.config.ServiceConfig;
 import cz.vutbr.fit.layout.ide.config.TabConfig;
 import cz.vutbr.fit.layout.ide.service.BasicRepositoryService;
+import cz.vutbr.fit.layout.ide.service.HTTPRDFRepositoryService;
 import cz.vutbr.fit.layout.ide.service.MemoryRDFRepositoryService;
 import cz.vutbr.fit.layout.ide.service.NativeRDFRepositoryService;
 import cz.vutbr.fit.layout.ide.service.RepositoryService;
@@ -209,6 +210,7 @@ public class Browser
         ret.add(new BasicRepositoryService());
         ret.add(new MemoryRDFRepositoryService());
         ret.add(new NativeRDFRepositoryService());
+        ret.add(new HTTPRDFRepositoryService());
         return ret;
     }
     
