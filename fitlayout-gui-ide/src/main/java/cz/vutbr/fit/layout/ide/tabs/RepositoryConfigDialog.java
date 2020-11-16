@@ -28,7 +28,7 @@ public class RepositoryConfigDialog extends JDialog
     private JComboBox<RepositoryService> serviceSelectionCombo;
 
     
-    public RepositoryConfigDialog(Frame parent, Browser browser, List<RepositoryService> services)
+    public RepositoryConfigDialog(Frame parent, Browser browser, List<RepositoryService> services, RepositoryService selected)
     {
         super(parent);
         setTitle("Artifact repository");
@@ -58,6 +58,14 @@ public class RepositoryConfigDialog extends JDialog
         gbc_serviceSelectionPanel.gridy = 1;
         getContentPane().add(serviceSelectionPanel, gbc_serviceSelectionPanel);
         
+        paramsPanel = new ParamsPanel();
+        GridBagConstraints gbc_paramsPanel = new GridBagConstraints();
+        gbc_paramsPanel.fill = GridBagConstraints.BOTH;
+        gbc_paramsPanel.insets = new Insets(0, 0, 5, 0);
+        gbc_paramsPanel.gridx = 0;
+        gbc_paramsPanel.gridy = 2;
+        getContentPane().add(paramsPanel, gbc_paramsPanel);
+        
         serviceSelectionCombo = new JComboBox<>();
         serviceSelectionCombo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) 
@@ -71,15 +79,9 @@ public class RepositoryConfigDialog extends JDialog
             }
         });
         serviceSelectionCombo.setModel(new DefaultComboBoxModel<RepositoryService>(servList));
+        if (selected != null)
+            serviceSelectionCombo.setSelectedItem(selected);
         serviceSelectionPanel.add(serviceSelectionCombo);
-        
-        paramsPanel = new ParamsPanel();
-        GridBagConstraints gbc_paramsPanel = new GridBagConstraints();
-        gbc_paramsPanel.fill = GridBagConstraints.BOTH;
-        gbc_paramsPanel.insets = new Insets(0, 0, 5, 0);
-        gbc_paramsPanel.gridx = 0;
-        gbc_paramsPanel.gridy = 2;
-        getContentPane().add(paramsPanel, gbc_paramsPanel);
         
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -98,7 +100,7 @@ public class RepositoryConfigDialog extends JDialog
                 if (i != -1)
                 {
                     var sel = serviceSelectionCombo.getItemAt(i);
-                    browser.connectRepository(sel.createRepository());
+                    browser.connectRepository(sel);
                     dispose();
                 }
             }

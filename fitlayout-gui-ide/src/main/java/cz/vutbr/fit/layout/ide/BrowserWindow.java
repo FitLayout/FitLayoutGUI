@@ -296,6 +296,16 @@ public class BrowserWindow
         list.add(view);
     }
     
+    public int[] getGeometry()
+    {
+        return new int[] { mainWindow.getX(), mainWindow.getY(), mainWindow.getWidth(), mainWindow.getHeight() };
+    }
+    
+    public void setGeometry(int[] geom)
+    {
+        mainWindow.setBounds(geom[0], geom[1], geom[2], geom[3]);
+    }
+    
     //================================================================================================================================
     
     public List<BrowserTabState> getTabStates()
@@ -1228,7 +1238,8 @@ public class BrowserWindow
             btnRepository.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    var repoDialog = new RepositoryConfigDialog(mainWindow, browser, browser.loadRepositoryServices());
+                    var repoDialog = new RepositoryConfigDialog(mainWindow, browser, 
+                            browser.loadRepositoryServices(), browser.getSelectedRepoService());
                     repoDialog.setVisible(true);
                 }
             });

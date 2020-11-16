@@ -25,6 +25,7 @@ import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
 
 import cz.vutbr.fit.layout.api.AreaTreeOperator;
+import cz.vutbr.fit.layout.api.ServiceManager;
 import cz.vutbr.fit.layout.ide.GUIProcessor;
 
 import java.awt.event.ActionListener;
@@ -170,7 +171,7 @@ public class OperatorConfigWindow extends JFrame
                     {
                         AreaTreeOperator op = (AreaTreeOperator) sel;
                         proc.getSelectedOperators().add(op);
-                        proc.getOperatorParams().add(proc.getServiceManager().getServiceParams(op));
+                        proc.getOperatorParams().add(ServiceManager.getServiceParams(op));
                         updateLists();
                     }
                 }

@@ -7,12 +7,13 @@ package cz.vutbr.fit.layout.ide.service;
 
 import cz.vutbr.fit.layout.api.ArtifactRepository;
 import cz.vutbr.fit.layout.api.ParametrizedOperation;
+import cz.vutbr.fit.layout.api.Service;
 
 /**
  * 
  * @author burgetr
  */
-public interface RepositoryService extends ParametrizedOperation
+public interface RepositoryService extends Service, ParametrizedOperation
 {
     
     /**

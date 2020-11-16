@@ -13,6 +13,7 @@ import org.eclipse.rdf4j.model.IRI;
 
 import cz.vutbr.fit.layout.api.AreaTreeOperator;
 import cz.vutbr.fit.layout.api.ArtifactService;
+import cz.vutbr.fit.layout.api.ServiceManager;
 import cz.vutbr.fit.layout.model.AreaTree;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.process.BaseProcessor;
@@ -83,6 +84,26 @@ public class GUIProcessor extends BaseProcessor
     //========================================================================================
     
     /**
+     * Fills the selected operators list according to a given set of operator IDs
+     * @param ids the operator IDs to be used
+     */
+    public void setSelectedOperatorIDs(String[] ids)
+    {
+        selectedOperators.clear();
+        operatorParams.clear();
+        for (String id : ids)
+        {
+            var op = getServiceManager().findParmetrizedService(id);
+            if (op != null && op instanceof AreaTreeOperator)
+            {
+                var params = ServiceManager.getServiceParams(op);
+                selectedOperators.add((AreaTreeOperator) op);
+                operatorParams.add(params);
+            }
+        }
+    }
+    
+    /**
      * Gets the list of operators selected using the GUI.
      * @return a list of operators
      */
@@ -109,7 +130,7 @@ public class GUIProcessor extends BaseProcessor
         {
             var op = selectedOperators.get(i);
             var params = operatorParams.get(i);
-            getServiceManager().setServiceParams(op, params);
+            ServiceManager.setServiceParams(op, params);
         }
     }
     

@@ -20,6 +20,7 @@ import javax.swing.event.DocumentListener;
 
 import cz.vutbr.fit.layout.api.Parameter;
 import cz.vutbr.fit.layout.api.ParametrizedOperation;
+import cz.vutbr.fit.layout.api.ServiceManager;
 import cz.vutbr.fit.layout.impl.ParameterBoolean;
 import cz.vutbr.fit.layout.impl.ParameterFloat;
 import cz.vutbr.fit.layout.impl.ParameterInt;
@@ -78,7 +79,7 @@ public class ParamsPanel extends JPanel implements ChangeListener, DocumentListe
         this.op = op;
         if (params == null)
         {
-            this.params = getServiceParams(op);
+            this.params = ServiceManager.getServiceParams(op);
             directMode = true;
         }
         else
@@ -205,20 +206,10 @@ public class ParamsPanel extends JPanel implements ChangeListener, DocumentListe
         {
             boolean a = autosave;
             autosave = false;
-            this.params = getServiceParams(op);
+            this.params = ServiceManager.getServiceParams(op);
             setParams(this.params);
             autosave = a;
         }
-    }
-    
-    private Map<String, Object> getServiceParams(ParametrizedOperation op)
-    {
-        Map<String, Object> ret = new HashMap<String, Object>();
-        for (Parameter param : op.getParams())
-        {
-            ret.put(param.getName(), op.getParam(param.getName()));
-        }
-        return ret;
     }
     
     //======================================================================================

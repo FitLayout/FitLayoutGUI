@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import cz.vutbr.fit.layout.api.ArtifactRepository;
 import cz.vutbr.fit.layout.api.ParametrizedOperation;
 import cz.vutbr.fit.layout.api.ServiceManager;
+import cz.vutbr.fit.layout.ide.config.EnvConfig;
 import cz.vutbr.fit.layout.ide.config.IdeConfig;
 import cz.vutbr.fit.layout.ide.config.ServiceConfig;
 import cz.vutbr.fit.layout.ide.config.TabConfig;
@@ -50,7 +51,8 @@ public class Browser
     public static final String configDir = System.getProperty("user.home") + "/.fitlayout";
     
     private ConfigFile configFile;
-    List<RepositoryService> repoServices;
+    private List<RepositoryService> repoServices;
+    private RepositoryService selectedRepoService;
     
     private BrowserWindow window;
     private BoxTreeTab boxTreeTab;
@@ -67,7 +69,9 @@ public class Browser
     public void init()
     {
         processor = new GUIProcessor();
-        repoServices = loadRepositoryServices();
+        loadRepositoryServices();
+        if (!repoServices.isEmpty())
+            selectedRepoService = repoServices.get(0);
         configFile = new ConfigFile();
         loadConfig();
     }
@@ -85,6 +89,11 @@ public class Browser
     public void setProcessor(GUIProcessor processor)
     {
         this.processor = processor;
+    }
+
+    public RepositoryService getSelectedRepoService()
+    {
+        return selectedRepoService;
     }
 
     public ArtifactRepository getRepository()
@@ -155,7 +164,7 @@ public class Browser
         {
             ServiceConfig sconf = new ServiceConfig();
             sconf.id = entry.getKey();
-            sconf.params = getProcessor().getServiceManager().getServiceParams(entry.getValue());
+            sconf.params = ServiceManager.getServiceParams(entry.getValue());
             config.services[i++] = sconf;
         }
         //store tab states
@@ -165,6 +174,22 @@ public class Browser
         {
             config.tabs[i++] = tabState.getTabConfig();
         }
+        //environment
+        config.env = new EnvConfig();
+        config.env.repos = new ServiceConfig[repoServices.size()];
+        i = 0;
+        for (RepositoryService serv : repoServices)
+        {
+            ServiceConfig sconf = new ServiceConfig();
+            sconf.id = serv.getId();
+            sconf.params = ServiceManager.getServiceParams(serv);
+            config.env.repos[i++] = sconf;
+        }
+        config.env.repo = (selectedRepoService == null) ? null : selectedRepoService.getId();
+        config.env.window = window.getGeometry();
+        config.env.selectedOps = new String[processor.getSelectedOperators().size()];
+        for (i = 0; i < processor.getSelectedOperators().size(); i++)
+            config.env.selectedOps[i] = processor.getSelectedOperators().get(i).getId();
         //save
         try
         {
@@ -179,14 +204,37 @@ public class Browser
         try
         {
             IdeConfig config = configFile.load();
-            //load repository config TODO
-            loadDefaults();
-            //restore service params
-            for (ServiceConfig sconf : config.services)
+            //load repository config
+            if (config.env != null)
             {
-                final ServiceManager sm = getProcessor().getServiceManager(); 
-                var op = sm.findParmetrizedService(sconf.id);
-                sm.setServiceParams(op, sconf.params);
+                if (config.env.repos != null)
+                {
+                    for (ServiceConfig sconf : config.env.repos)
+                    {
+                        var op = findRepositoryService(sconf.id);
+                        ServiceManager.setServiceParams(op, sconf.params);
+                    }
+                }
+                if (config.env.repo != null)
+                {
+                    var op = findRepositoryService(config.env.repo);
+                    connectRepository(op);
+                }
+            }
+            //restore service params
+            if (config.services != null)
+            {
+                for (ServiceConfig sconf : config.services)
+                {
+                    final ServiceManager sm = getProcessor().getServiceManager(); 
+                    var op = sm.findParmetrizedService(sconf.id);
+                    ServiceManager.setServiceParams(op, sconf.params);
+                }
+            }
+            //selected operators
+            if (config.env.selectedOps != null)
+            {
+                processor.setSelectedOperatorIDs(config.env.selectedOps);
             }
             
         } catch (IOException e) {
@@ -206,22 +254,37 @@ public class Browser
      */
     public List<RepositoryService> loadRepositoryServices()
     {
-        List<RepositoryService> ret = new ArrayList<>();
-        ret.add(new BasicRepositoryService());
-        ret.add(new MemoryRDFRepositoryService());
-        ret.add(new NativeRDFRepositoryService());
-        ret.add(new HTTPRDFRepositoryService());
-        return ret;
+        if (repoServices == null)
+        {
+            repoServices = new ArrayList<>();
+            repoServices.add(new BasicRepositoryService());
+            repoServices.add(new MemoryRDFRepositoryService());
+            repoServices.add(new NativeRDFRepositoryService());
+            repoServices.add(new HTTPRDFRepositoryService());
+        }
+        return repoServices;
     }
     
-    public void connectRepository(ArtifactRepository repository)
+    private RepositoryService findRepositoryService(String id)
+    {
+        for (RepositoryService serv : repoServices)
+        {
+            if (id.equals(serv.getId()))
+                return serv;
+        }
+        return null;
+    }
+    
+    public void connectRepository(RepositoryService service)
     {
         if (processor.getRepository() != null)
         {
             processor.getRepository().disconnect();
         }
-        processor.setRepository(repository);
-        window.reloadArtifactTree();
+        selectedRepoService = service;
+        processor.setRepository(service.createRepository());
+        if (window != null)
+            window.reloadArtifactTree();
     }
     
     //=========================================================================
@@ -250,15 +313,23 @@ public class Browser
         window.addArtifactView(new PageView(this));
         window.addArtifactView(new AreaTreeView(this));
         
-        //restore tab states if available
-        if (configFile != null && configFile.getLoadedConfig() != null && configFile.getLoadedConfig().tabs != null)
+        //restore window geometry and tab states if available
+        if (configFile != null && configFile.getLoadedConfig() != null)
         {
-            for (TabConfig tconf : configFile.getLoadedConfig().tabs)
+            final IdeConfig conf = configFile.getLoadedConfig();
+            if (conf.env != null && conf.env.window != null && conf.env.window.length == 4)
             {
-                for (BrowserTabState tabState : window.getTabStates())
+                window.setGeometry(conf.env.window);
+            }
+            if (conf.tabs != null)
+            {
+                for (TabConfig tconf : conf.tabs)
                 {
-                    if (tabState.setTabConfig(tconf))
-                        break;
+                    for (BrowserTabState tabState : window.getTabStates())
+                    {
+                        if (tabState.setTabConfig(tconf))
+                            break;
+                    }
                 }
             }
         }

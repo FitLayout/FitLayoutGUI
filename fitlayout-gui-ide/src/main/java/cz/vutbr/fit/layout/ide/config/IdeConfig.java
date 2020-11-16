@@ -13,4 +13,5 @@ public class IdeConfig
 {
     public ServiceConfig[] services;
     public TabConfig[] tabs;
+    public EnvConfig env;
 }
