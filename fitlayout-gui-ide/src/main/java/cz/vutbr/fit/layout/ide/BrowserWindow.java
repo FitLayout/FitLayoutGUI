@@ -275,6 +275,11 @@ public class BrowserWindow
         getArtifactTree().setModel(model);
     }
     
+    public void reloadArtifactTree()
+    {
+        artifactTreeModel.reloadArtifactTree();
+    }
+    
     public void updateArtifactTree()
     {
         artifactTreeModel.updateArtifactTree();

@@ -36,7 +36,6 @@ import cz.vutbr.fit.layout.ide.tabs.BrowserTabState;
 import cz.vutbr.fit.layout.ide.tabs.SegmentationTab;
 import cz.vutbr.fit.layout.ide.views.AreaTreeView;
 import cz.vutbr.fit.layout.ide.views.PageView;
-import cz.vutbr.fit.layout.impl.DefaultArtifactRepository;
 import cz.vutbr.fit.layout.model.Artifact;
 
 /**
@@ -57,7 +56,7 @@ public class Browser
     private SegmentationTab segmentationTab;
     
     private GUIProcessor processor;
-    private ArtifactRepository repository;
+    //private ArtifactRepository repository;
     
     
     public Browser()
@@ -89,12 +88,7 @@ public class Browser
 
     public ArtifactRepository getRepository()
     {
-        return repository;
-    }
-
-    public void setRepository(ArtifactRepository repository)
-    {
-        this.repository = repository;
+        return processor.getRepository();
     }
 
     //=========================================================================
@@ -119,7 +113,7 @@ public class Browser
      */
     public void addArtifact(Artifact artifact)
     {
-        repository.addArtifact(artifact);
+        getRepository().addArtifact(artifact);
         window.updateArtifactTree();
         window.selectArtifact(artifact);
     }
@@ -139,7 +133,7 @@ public class Browser
                 Object desc = ((DefaultMutableTreeNode) e.nextElement()).getUserObject();
                 if (desc != null && desc instanceof Artifact)
                 {
-                    repository.removeArtifact(((Artifact) desc).getIri());
+                    getRepository().removeArtifact(((Artifact) desc).getIri());
                 }
             }
             window.updateArtifactTree();
@@ -202,11 +196,7 @@ public class Browser
     
     public void loadDefaults()
     {
-        repository = new DefaultArtifactRepository();
-        //RDFStorage storage = RDFStorage.createNative(System.getProperty("user.home") + "/.fitlayout/storage");
-        //RDFStorage storage = RDFStorage.createHTTP("http://localhost:8080/rdf4j-server", "fitlayout2");
-        //repository = new RDFArtifactRepository(storage);
-        processor.setRepository(repository);
+        processor.setRepository(BasicRepositoryService.defaultRepository);
     }
     
     /**
@@ -226,10 +216,10 @@ public class Browser
     {
         if (processor.getRepository() != null)
         {
-            //TODO disconnect the previously used repo
+            processor.getRepository().disconnect();
         }
         processor.setRepository(repository);
-        window.updateArtifactTree();
+        window.reloadArtifactTree();
     }
     
     //=========================================================================

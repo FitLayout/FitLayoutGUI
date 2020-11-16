@@ -14,7 +14,8 @@ import cz.vutbr.fit.layout.impl.DefaultArtifactRepository;
  */
 public class BasicRepositoryService extends BaseRepositoryService
 {
-    private ArtifactRepository repository;
+    //this service always reuses a single default repository
+    public static final ArtifactRepository defaultRepository = new DefaultArtifactRepository();
     
 
     @Override
@@ -38,9 +39,7 @@ public class BasicRepositoryService extends BaseRepositoryService
     @Override
     public ArtifactRepository createRepository()
     {
-        if (repository == null)
-            repository = new DefaultArtifactRepository();
-        return repository;
+        return defaultRepository;
     }
 
 }

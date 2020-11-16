@@ -59,6 +59,16 @@ public class ArtifactTreeModel extends DefaultTreeModel
     }
     
     /**
+     * Reloads the tree model from the repository from scratch.
+     */
+    public void reloadArtifactTree()
+    {
+        ((DefaultMutableTreeNode) getRoot()).removeAllChildren();
+        nodeMap = new HashMap<>();
+        updateArtifactTree();
+    }
+    
+    /**
      * Updates the tree model according to the repository.
      */
     public void updateArtifactTree()
