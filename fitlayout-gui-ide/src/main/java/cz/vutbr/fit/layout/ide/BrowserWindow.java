@@ -26,6 +26,7 @@ import cz.vutbr.fit.layout.ide.tabs.BrowserPanel;
 import cz.vutbr.fit.layout.ide.tabs.BrowserTab;
 import cz.vutbr.fit.layout.ide.tabs.BrowserTabState;
 import cz.vutbr.fit.layout.ide.tabs.RepositoryConfigDialog;
+import cz.vutbr.fit.layout.ide.tabs.ScreenShotPanel;
 import cz.vutbr.fit.layout.ide.views.ArtifactView;
 import cz.vutbr.fit.layout.model.Area;
 import cz.vutbr.fit.layout.model.Artifact;
@@ -146,6 +147,8 @@ public class BrowserWindow
     private JButton showArtAreaButton = null;
     private JButton showColumnsButton = null;
     private JTabbedPane toolTabs = null;
+    private JToggleButton screenShotButton = null;
+    private ScreenShotPanel screenShotPanel = null;
     private List<JCheckBoxMenuItem> tabViewItems;
     private JPanel artifactTreePanel;
     private JScrollPane artifactTreeScroll;
@@ -426,8 +429,28 @@ public class BrowserWindow
     private void setCurrentPage(Page page) 
     {
         contentCanvas = createContentCanvas(page);
+        setupCanvasListeners(contentCanvas);
+        contentScroll.setViewportView(contentCanvas);
+
+        if (page.getPngImage() != null) //if a screenshot is available
+        {
+            screenShotPanel = new ScreenShotPanel(page.getPngImage());
+            setupCanvasListeners(screenShotPanel);
+            if (screenShotPanel.isOk())
+            {
+                screenShotButton.setEnabled(true);
+            }
+        }
+        else
+            screenShotButton.setEnabled(false);
+        screenShotButton.setSelected(false);
         
-        contentCanvas.addMouseListener(new MouseListener() {
+        notifyBoxTreeUpdate(page);
+    }
+
+    private void setupCanvasListeners(JPanel canvas)
+    {
+        canvas.addMouseListener(new MouseListener() {
             public void mouseClicked(MouseEvent e)
             {
                 System.out.println("Click: " + e.getX() + ":" + e.getY());
@@ -447,7 +470,7 @@ public class BrowserWindow
                 statusText.setText("");
             }
         });
-        contentCanvas.addMouseMotionListener(new MouseMotionListener() {
+        canvas.addMouseMotionListener(new MouseMotionListener() {
             public void mouseDragged(MouseEvent e)
             { 
                 canvasDrag(e.getX(), e.getY());
@@ -455,7 +478,7 @@ public class BrowserWindow
             public void mouseMoved(MouseEvent e) 
             { 
                 String s = "Absolute: " + e.getX() + ":" + e.getY();
-                //Area node = segmentationTab.getSelectedArea();
+                /*Area node = segmentationTab.getSelectedArea();
                 Area node = null; //TODO
                 if (node != null)
                 {
@@ -463,14 +486,11 @@ public class BrowserWindow
                     int rx = e.getX() - area.getX1();
                     int ry = e.getY() - area.getY1();
                     s += "  Relative: " + rx + ":" + ry;
-                }
+                }*/
                 statusText.setText(s);
                 canvasMove(e.getX(), e.getY());
             }
         });
-        contentScroll.setViewportView(contentCanvas);
-        
-        notifyBoxTreeUpdate(page);
     }
     
     private void artifactSelected(Artifact a)
@@ -1001,13 +1021,70 @@ public class BrowserWindow
             infoSplitter.setDividerLocation(250);
             JPanel artifactViewPanel = new JPanel();
             infoSplitter.setLeftComponent(artifactViewPanel);
-            artifactViewPanel.setLayout(new GridLayout(1, 1, 0, 0));
-            artifactViewPanel.add(getArtifactViewTabs());
+            
+            artifactViewPanel.setLayout(new GridBagLayout());
+            
+            GridBagConstraints gbc_toolsPanel = new GridBagConstraints();
+            gbc_toolsPanel.fill = GridBagConstraints.BOTH;
+            gbc_toolsPanel.gridx = 0;
+            gbc_toolsPanel.gridy = 0;
+            artifactViewPanel.add(createViewToolsPanel(), gbc_toolsPanel);
+
+            GridBagConstraints gbc_artifactViewTabs = new GridBagConstraints();
+            gbc_artifactViewTabs.insets = new Insets(0, 2, 0, 2);
+            gbc_artifactViewTabs.weightx = 1.0;
+            gbc_artifactViewTabs.weighty = 1.0;
+            gbc_artifactViewTabs.fill = GridBagConstraints.BOTH;
+            gbc_artifactViewTabs.gridx = 0;
+            gbc_artifactViewTabs.gridy = 1;
+            artifactViewPanel.add(getArtifactViewTabs(), gbc_artifactViewTabs);
+            
             infoSplitter.setRightComponent(getContentPanel());
         }
         return infoSplitter;
     }
 
+    private JPanel createViewToolsPanel()
+    {
+        JPanel toolsPanel = new JPanel();
+        GridBagLayout gbl_toolsPanel = new GridBagLayout();
+        gbl_toolsPanel.rowHeights = new int[]{26, 0};
+        gbl_toolsPanel.columnWeights = new double[]{1.0};
+        gbl_toolsPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+        toolsPanel.setLayout(gbl_toolsPanel);
+        
+        screenShotButton = new JToggleButton("S");
+        screenShotButton.setToolTipText("Show screenshot");
+        screenShotButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                int hv = contentScroll.getHorizontalScrollBar().getValue();
+                int vv = contentScroll.getVerticalScrollBar().getValue();
+                if (screenShotButton.isSelected())
+                {
+                    contentScroll.setViewportView(screenShotPanel);
+                }
+                else
+                {
+                    contentScroll.setViewportView(contentCanvas);
+                }
+                contentScroll.getHorizontalScrollBar().setValue(hv);
+                contentScroll.getVerticalScrollBar().setValue(vv);
+            }
+        });
+        screenShotButton.setMargin(new Insets(2, 5, 2, 5));
+        screenShotButton.setEnabled(false); //will be enabled when a screen shot is available
+        GridBagConstraints gbc_btnScreen = new GridBagConstraints();
+        gbc_btnScreen.anchor = GridBagConstraints.EAST;
+        gbc_btnScreen.insets = new Insets(2, 5, 2, 5);
+        gbc_btnScreen.gridx = 0;
+        gbc_btnScreen.gridy = 0;
+        toolsPanel.add(screenShotButton, gbc_btnScreen);
+        
+        return toolsPanel;
+    }
+    
+    
     /**
      * This method initializes showArtAreaButton    
      *  
