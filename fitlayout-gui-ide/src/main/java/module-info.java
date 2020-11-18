@@ -8,6 +8,7 @@ module cz.vutbr.fit.layout.ide
     
     requires transitive cz.vutbr.fit.layout.core;
     requires cz.vutbr.fit.layout.segm;
+    requires cz.vutbr.fit.layout.vips;
     requires cz.vutbr.fit.layout.tools;
     requires cz.vutbr.fit.layout.rdf;
     
