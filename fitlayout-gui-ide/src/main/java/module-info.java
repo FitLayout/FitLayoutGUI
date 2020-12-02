@@ -7,6 +7,7 @@ module cz.vutbr.fit.layout.ide
     requires com.google.gson;
     
     requires transitive cz.vutbr.fit.layout.core;
+    requires cz.vutbr.fit.layout.io;
     requires cz.vutbr.fit.layout.segm;
     requires cz.vutbr.fit.layout.vips;
     requires cz.vutbr.fit.layout.tools;
