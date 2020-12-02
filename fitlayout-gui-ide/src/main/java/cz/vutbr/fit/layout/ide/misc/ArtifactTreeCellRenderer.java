@@ -13,9 +13,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import cz.vutbr.fit.layout.api.IRIDecoder;
-import cz.vutbr.fit.layout.model.AreaTree;
 import cz.vutbr.fit.layout.model.Artifact;
-import cz.vutbr.fit.layout.model.Page;
 
 /**
  * 
@@ -43,58 +41,24 @@ public class ArtifactTreeCellRenderer extends DefaultTreeCellRenderer
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
         Object nodeVal = node.getUserObject();
         
-        if (nodeVal instanceof AreaTree)
-        {
-            final AreaTree art = (AreaTree) nodeVal;
-            final String iriStr = iriDecoder.encodeIri(art.getIri());
-            final String descr;
-            if (art.getCreator() != null)
-                descr = art.getCreator();
-            else
-                descr = "Area tree";
-            setText("[" + iriStr + "] " + descr);
-            setToolTipText("<html>" + getCreatorDescr(art) + "</html>");
-        }
-        else if (nodeVal instanceof Page)
-        {
-            final Page art = (Page) nodeVal;
-            final String iriStr = iriDecoder.encodeIri(art.getIri());
-            final String descr;
-            if (art.getTitle() != null)
-                descr = art.getTitle();
-            else if (art.getSourceURL() != null)
-                descr = art.getSourceURL().toString();
-            else
-                descr = "Page";
-            setText("[" + iriStr + "] " + descr);
-            setToolTipText("<html>" + getPageTooltip(art) + "</html>");
-        }
-        else if (nodeVal instanceof Artifact)
+        if (nodeVal instanceof Artifact)
         {
             final Artifact art = (Artifact) nodeVal;
             final String iriStr = iriDecoder.encodeIri(art.getIri());
             final String typeStr = iriDecoder.encodeIri(art.getArtifactType());
-            setText("[" + iriStr + "] " + typeStr);
+            final String descr = (art.getLabel() != null) ? art.getLabel() : typeStr;
+            setText("[" + iriStr + "] " + descr);
             setToolTipText("<html>" + getCreatorDescr(art) + "</html>");
         }
         
         return ret;
     }
     
-    private String getPageTooltip(Page page)
-    {
-        String ret = "";
-        if (page.getTitle() != null)
-            ret += "<b>Title:</b> " + page.getTitle() + "<br>";
-        if (page.getSourceURL() != null)
-            ret += "<b>URL:</b> " + page.getSourceURL() + "<br>";
-        ret += getCreatorDescr(page);
-        return ret;
-    }
-    
     private String getCreatorDescr(Artifact art)
     {
         String ret = "";
+        if (art.getLabel() != null)
+            ret += "<b>" + art.getLabel() + "</b><br>";
         if (art.getCreator() != null)
             ret += "<b>Creator:</b> " + art.getCreator() + "<br>";
         if (art.getCreatorParams() != null)
