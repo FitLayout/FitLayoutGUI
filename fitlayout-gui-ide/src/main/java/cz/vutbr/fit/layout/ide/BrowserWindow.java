@@ -33,6 +33,7 @@ import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.model.Box;
 import cz.vutbr.fit.layout.model.Page;
 import cz.vutbr.fit.layout.model.Rectangular;
+import cz.vutbr.fit.layout.ontology.BOX;
 
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
@@ -108,6 +109,9 @@ public class BrowserWindow
     private boolean rectSelection = false; //rectangle area selection in progress
     private int rectX1, rectY1; //rectangle selection start point
     private Selection selection; //selection box
+    
+    private Page lastSelectedPage; //selected page cache
+    private Artifact lastSelectedArtifact; //selected artifact cache
     
     private List<AreaSelectionListener> areaListeners;
     private List<TreeListener> treeListeners;
@@ -401,11 +405,20 @@ public class BrowserWindow
      */
     public Artifact getSelectedArtifact()
     {
+        Artifact ret = null;
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) artifactTree.getLastSelectedPathComponent();
         if (node != null && node.getUserObject() != null)
-            return (Artifact) node.getUserObject();
-        else
-            return null;
+            ret = (Artifact) node.getUserObject();
+        //replace the artifact info with the real artifact from the repository
+        if (ret != null)
+        {
+            if (lastSelectedArtifact != null && ret.getIri().equals(lastSelectedArtifact.getIri()))
+                ret = lastSelectedArtifact;
+            else
+                ret = browser.getRepository().getArtifact(ret.getIri());
+        }
+        lastSelectedArtifact = ret; //store for repeated use
+        return ret;
     }
 
     /**
@@ -415,15 +428,30 @@ public class BrowserWindow
      */
     private Page getSelectedPage()
     {
+        Artifact selected = null;
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) artifactTree.getLastSelectedPathComponent();
         while (node != null && node.getUserObject() != null)
         {
-            if (node.getUserObject() instanceof Page)
-                return (Page) node.getUserObject();
+            final Artifact art = (Artifact) node.getUserObject();
+            if (BOX.Page.equals(art.getArtifactType()))
+            {
+                selected = art;
+                break;
+            }
             else
                 node = (DefaultMutableTreeNode) node.getParent();
         }
-        return null;
+        //replace the artifact info with the real artifact from the repository
+        Page selPage = null;
+        if (selected != null)
+        {
+            if (lastSelectedPage != null && selected.getIri().equals(lastSelectedPage.getIri()))
+                selPage = lastSelectedPage;
+            else
+                selPage = (Page) browser.getRepository().getArtifact(selected.getIri());
+        }
+        lastSelectedArtifact = selPage; //store for repeated use
+        return selPage;
     }
     
     private void setCurrentPage(Page page) 

@@ -69,6 +69,14 @@ public class ArtifactTreeCellRenderer extends DefaultTreeCellRenderer
             setText("[" + iriStr + "] " + descr);
             setToolTipText("<html>" + getPageTooltip(art) + "</html>");
         }
+        else if (nodeVal instanceof Artifact)
+        {
+            final Artifact art = (Artifact) nodeVal;
+            final String iriStr = iriDecoder.encodeIri(art.getIri());
+            final String typeStr = iriDecoder.encodeIri(art.getArtifactType());
+            setText("[" + iriStr + "] " + typeStr);
+            setToolTipText("<html>" + getCreatorDescr(art) + "</html>");
+        }
         
         return ret;
     }

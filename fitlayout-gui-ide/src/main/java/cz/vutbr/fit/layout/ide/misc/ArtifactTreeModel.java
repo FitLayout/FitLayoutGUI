@@ -73,25 +73,19 @@ public class ArtifactTreeModel extends DefaultTreeModel
      */
     public void updateArtifactTree()
     {
-        Collection<IRI> iris = proc.getRepository().getArtifactIRIs();
+        Collection<Artifact> infos = proc.getRepository().getArtifactInfo();
         // collect new nodes to add
         Set<Artifact> toAdd = new LinkedHashSet<>();
-        for (IRI iri : iris)
+        for (Artifact info : infos)
         {
-            if (!nodeMap.containsKey(iri))
-            {
-                Artifact a = proc.getRepository().getArtifact(iri);
-                if (a != null)
-                    toAdd.add(a);
-                else
-                    log.error("Could't retrieve artifact {} from repository", iri);
-            }
+            if (!nodeMap.containsKey(info.getIri()))
+                toAdd.add(info);
         }
         addToTree(toAdd);
         if (!toAdd.isEmpty())
             log.error("Some artifacts don't fit to the tree: {}", toAdd);
         // remove nodes of artifacts that are not in the repository anymore
-        retainChildNodes((DefaultMutableTreeNode) getRoot(), iris);
+        retainChildNodes((DefaultMutableTreeNode) getRoot(), infos);
         // update the component
         reload();
     }
@@ -136,7 +130,7 @@ public class ArtifactTreeModel extends DefaultTreeModel
         nodeMap.put(artifact.getIri(), newChild);
     }
     
-    private void retainChildNodes(DefaultMutableTreeNode root, Collection<IRI> toRetain)
+    private void retainChildNodes(DefaultMutableTreeNode root, Collection<Artifact> toRetain)
     {
         List<DefaultMutableTreeNode> toRemove = new ArrayList<>();
         // find the nodes to remove
@@ -144,7 +138,7 @@ public class ArtifactTreeModel extends DefaultTreeModel
         {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
             Artifact a = (Artifact) node.getUserObject();
-            if (!toRetain.contains(a.getIri()))
+            if (!toRetain.contains(a))
                 toRemove.add(node);
             else
                 retainChildNodes(node, toRetain);
