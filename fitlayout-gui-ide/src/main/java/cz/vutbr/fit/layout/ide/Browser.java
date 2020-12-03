@@ -212,13 +212,17 @@ public class Browser
                     for (ServiceConfig sconf : config.env.repos)
                     {
                         var op = findRepositoryService(sconf.id);
-                        ServiceManager.setServiceParams(op, sconf.params);
+                        if (op != null)
+                            ServiceManager.setServiceParams(op, sconf.params);
                     }
                 }
                 if (config.env.repo != null)
                 {
                     var op = findRepositoryService(config.env.repo);
-                    connectRepository(op);
+                    if (op != null)
+                        connectRepository(op);
+                    else
+                        log.warn("Repository service {} is not available anymore; using a default repository", config.env.repo);
                 }
             }
             //restore service params
@@ -228,7 +232,8 @@ public class Browser
                 {
                     final ServiceManager sm = getProcessor().getServiceManager(); 
                     var op = sm.findParmetrizedService(sconf.id);
-                    ServiceManager.setServiceParams(op, sconf.params);
+                    if (op != null)
+                        ServiceManager.setServiceParams(op, sconf.params);
                 }
             }
             //selected operators
