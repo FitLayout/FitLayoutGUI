@@ -14,6 +14,7 @@ import cz.vutbr.fit.layout.api.ServiceException;
 import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.views.ArtifactProviderPanel;
 import cz.vutbr.fit.layout.model.Artifact;
+import cz.vutbr.fit.layout.model.Page;
 import cz.vutbr.fit.layout.ontology.BOX;
 
 
@@ -76,8 +77,37 @@ public class BoxSourcePanel extends ArtifactProviderPanel
         {
             var btp = getServiceCombo().getItemAt(i);
             try {
-                Artifact a = getBrowser().getProcessor().processArtifact(null, btp, getServiceParamsPanel().getParams());
-                getBrowser().addArtifact(a);
+                
+                if (btp.getConsumes() == null) //no source artifact required
+                {
+                    Artifact a = getBrowser().getProcessor().processArtifact(null, btp, getServiceParamsPanel().getParams());
+                    getBrowser().addArtifact(a);
+                }
+                else if (BOX.Page.equals(btp.getConsumes())) //page required - use the selected page (if any)
+                {
+                    Page input = getBrowser().getWindow().getSelectedPage();
+                    if (input != null)
+                    {
+                        Artifact a = getBrowser().getProcessor().processArtifact(input, btp, getServiceParamsPanel().getParams());
+                        getBrowser().addArtifact(a);
+                    }
+                    else
+                        getBrowser().getWindow().displayErrorMessage("A source page must be selected");
+                }
+                else //other artifact required - try to use the selected artifact if the types match
+                {
+                    Artifact input = getBrowser().getWindow().getSelectedArtifact();
+                    if (input == null)
+                        getBrowser().getWindow().displayErrorMessage("A source artifact must be selected");
+                    else if (!btp.getConsumes().equals(input.getArtifactType()))
+                        getBrowser().getWindow().displayErrorMessage("Selected artifact does not match the required source type");
+                    else
+                    {
+                        Artifact a = getBrowser().getProcessor().processArtifact(input, btp, getServiceParamsPanel().getParams());
+                        getBrowser().addArtifact(a);
+                    }
+                }
+                
             } catch (ServiceException e) {
                 Throwable re = e.getCause();
                 if (re instanceof MalformedURLException)
@@ -87,6 +117,7 @@ public class BoxSourcePanel extends ArtifactProviderPanel
             }
         }
     }
+    
     
     //====================================================================================================
     

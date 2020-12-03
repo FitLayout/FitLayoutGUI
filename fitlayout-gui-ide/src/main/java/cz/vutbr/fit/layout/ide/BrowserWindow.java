@@ -426,7 +426,7 @@ public class BrowserWindow
      * @return the Page corresponding to the currently selected artifact or {@code null} when
      * nothing is selected or no such page exists.
      */
-    private Page getSelectedPage()
+    public Page getSelectedPage()
     {
         Artifact selected = null;
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) artifactTree.getLastSelectedPathComponent();
