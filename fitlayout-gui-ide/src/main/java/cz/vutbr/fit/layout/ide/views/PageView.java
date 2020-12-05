@@ -151,9 +151,10 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
 
         vals.add(infoTableData("Color", Utils.colorString(box.getColor())));
         vals.add(infoTableData("Bg color", Utils.colorString(box.getBackgroundColor())));
+        vals.add(infoTableData("Bg image", box.getBackgroundImagePng() == null ? "-" : box.getBackgroundImagePng().length + " bytes"));
         vals.add(infoTableData("Borders", Utils.borderString(box)));
         vals.add(infoTableData("Bg separated", (box.isBackgroundSeparated()) ? "true" : "false"));
-        //vals.add(infoTableData("V. separated", (box.isVisuallySeparated()) ? "true" : "false"));
+        vals.add(infoTableData("V. separated", (box.isVisuallySeparated()) ? "true" : "false"));
         
         vals.add(infoTableData("Font", box.getFontFamily()));
         vals.add(infoTableData("Font size", String.valueOf(box.getTextStyle().getFontSize())));
@@ -162,6 +163,8 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
         vals.add(infoTableData("Underline", String.valueOf(box.getTextStyle().getUnderline())));
         vals.add(infoTableData("Line through", String.valueOf(box.getTextStyle().getLineThrough())));
         vals.add(infoTableData("Cont. length", String.valueOf(box.getTextStyle().getContentLength())));
+        if (box.getContentObject() != null)
+            vals.add(infoTableData("Cont. object", String.valueOf(box.getContentObject())));
         
         DefaultTableModel tab = new DefaultTableModel(vals, cols);
         infoTable.setModel(tab);
