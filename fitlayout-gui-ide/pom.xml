@@ -66,6 +66,11 @@
 		</dependency>
 		<dependency>
 			<groupId>cz.vutbr.fit.layout</groupId>
+			<artifactId>fitlayout-segm-bcs</artifactId>
+			<version>${fitlayout.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>cz.vutbr.fit.layout</groupId>
 			<artifactId>fitlayout-tools</artifactId>
 			<version>${fitlayout.version}</version>
 		</dependency>
