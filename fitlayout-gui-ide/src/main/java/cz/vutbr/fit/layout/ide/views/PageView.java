@@ -126,7 +126,7 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
     public void showBox(Box node)
     {
         //System.out.println("Node:" + node);
-        browser.getWindow().getOutputDisplay().drawExtent(node);
+        browser.getWindow().getOverlayDisplay().drawExtent(node);
         browser.getWindow().updateDisplay();
         displayBoxInfo(node);
     }

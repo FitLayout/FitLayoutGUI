@@ -169,7 +169,7 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
     
     private void showArea(Area area)
     {
-        browser.getWindow().getOutputDisplay().drawExtent(area);
+        browser.getWindow().getOverlayDisplay().drawExtent(area);
         browser.getWindow().updateDisplay();
         
         //show the info table

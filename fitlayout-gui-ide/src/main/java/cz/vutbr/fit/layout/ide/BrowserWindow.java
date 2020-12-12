@@ -26,7 +26,6 @@ import cz.vutbr.fit.layout.ide.tabs.BrowserPanel;
 import cz.vutbr.fit.layout.ide.tabs.BrowserTab;
 import cz.vutbr.fit.layout.ide.tabs.BrowserTabState;
 import cz.vutbr.fit.layout.ide.tabs.RepositoryConfigDialog;
-import cz.vutbr.fit.layout.ide.tabs.ScreenShotPanel;
 import cz.vutbr.fit.layout.ide.views.ArtifactView;
 import cz.vutbr.fit.layout.model.Area;
 import cz.vutbr.fit.layout.model.Artifact;
@@ -152,7 +151,6 @@ public class BrowserWindow
     private JButton showColumnsButton = null;
     private JTabbedPane toolTabs = null;
     private JToggleButton screenShotButton = null;
-    private ScreenShotPanel screenShotPanel = null;
     private List<JCheckBoxMenuItem> tabViewItems;
     private JPanel artifactTreePanel;
     private JScrollPane artifactTreeScroll;
@@ -221,9 +219,14 @@ public class BrowserWindow
         sidebarPane.addTab(title, component);
     }
 
-    public OutputDisplay getOutputDisplay()
+    public OutputDisplay getContentDisplay()
     {
-        return ((BrowserPanel) contentCanvas).getOutputDisplay();
+        return ((BrowserPanel) contentCanvas).getContentDisplay();
+    }
+
+    public OutputDisplay getOverlayDisplay()
+    {
+        return ((BrowserPanel) contentCanvas).getOverlayDisplay();
     }
 
     public void updateDisplay()
@@ -235,6 +238,12 @@ public class BrowserWindow
     {
         if (contentCanvas != null && contentCanvas instanceof BrowserPanel)
             ((BrowserPanel) contentCanvas).redrawPage();
+    }
+
+    public void clearOverlay()
+    {
+        if (contentCanvas != null && contentCanvas instanceof BrowserPanel)
+            ((BrowserPanel) contentCanvas).clearOverlay();
     }
 
     public void addAreaSelectionListener(AreaSelectionListener listener)
@@ -460,15 +469,8 @@ public class BrowserWindow
         setupCanvasListeners(contentCanvas);
         contentScroll.setViewportView(contentCanvas);
 
-        if (page.getPngImage() != null) //if a screenshot is available
-        {
-            screenShotPanel = new ScreenShotPanel(page.getPngImage());
-            setupCanvasListeners(screenShotPanel);
-            if (screenShotPanel.isOk())
-            {
-                screenShotButton.setEnabled(true);
-            }
-        }
+        if (((BrowserPanel) contentCanvas).screenShotAvailable()) //if a screenshot is available
+            screenShotButton.setEnabled(true);
         else
             screenShotButton.setEnabled(false);
         screenShotButton.setSelected(false);
@@ -649,7 +651,7 @@ public class BrowserWindow
     
     public void showAllBoxes(Box root)
     {
-        getOutputDisplay().drawExtent(root);
+        getOverlayDisplay().drawExtent(root);
         for (int i = 0; i < root.getChildCount(); i++)
             showAllBoxes(root.getChildAt(i));
     }
@@ -657,7 +659,7 @@ public class BrowserWindow
     public void showAreas(Area root, String name)
     {
         if (name == null || root.toString().contains(name))
-            getOutputDisplay().drawExtent(root);
+            getOverlayDisplay().drawExtent(root);
         for (int i = 0; i < root.getChildCount(); i++)
             showAreas(root.getChildAt(i), name);
     }
@@ -913,7 +915,7 @@ public class BrowserWindow
             {
                 public void actionPerformed(java.awt.event.ActionEvent e)
                 {
-                    redrawPage();
+                    clearOverlay();
                     updateDisplay();
                 }
             });
@@ -1086,18 +1088,8 @@ public class BrowserWindow
         screenShotButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                int hv = contentScroll.getHorizontalScrollBar().getValue();
-                int vv = contentScroll.getVerticalScrollBar().getValue();
-                if (screenShotButton.isSelected())
-                {
-                    contentScroll.setViewportView(screenShotPanel);
-                }
-                else
-                {
-                    contentScroll.setViewportView(contentCanvas);
-                }
-                contentScroll.getHorizontalScrollBar().setValue(hv);
-                contentScroll.getVerticalScrollBar().setValue(vv);
+                ((BrowserPanel) contentCanvas).showScreenShot(screenShotButton.isSelected());
+                updateDisplay();
             }
         });
         screenShotButton.setMargin(new Insets(2, 5, 2, 5));

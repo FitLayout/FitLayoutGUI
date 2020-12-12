@@ -79,7 +79,7 @@ public class SegmentatorPlugin implements BrowserPlugin, AreaSelectionListener
     private void drawSeparator(Separator sep)
     {
         final Color color = sep.isHorizontal() ? Color.BLUE : Color.RED;
-        browser.getWindow().getOutputDisplay().drawRectangle(sep, color);
+        browser.getWindow().getOverlayDisplay().drawRectangle(sep, color);
     }
 
     /** 
