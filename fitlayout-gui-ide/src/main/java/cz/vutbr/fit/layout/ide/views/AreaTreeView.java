@@ -12,10 +12,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -54,6 +57,7 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
     private JTable infoTable;
     private JTree areaJTree;
     private JTable probTable;
+    private JButton btnShowAll;
 
     private AreaTree currentAreaTree;
     private boolean showTreeSelection = true;
@@ -63,7 +67,7 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
     {
         super(browser);
         viewPanel = createViewPanel();
-        browser.getWindow().addCanvasClickListener(null, this, false);
+        browser.getWindow().addCanvasClickListener(this);
     }
 
     @Override
@@ -169,8 +173,8 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
     
     private void showArea(Area area)
     {
-        browser.getWindow().getOverlayDisplay().drawExtent(area);
-        browser.getWindow().updateDisplay();
+        getBrowser().getWindow().getOverlayDisplay().drawExtent(area);
+        getBrowser().getWindow().updateDisplay();
         
         //show the info table
         displayAreaInfo(area);
@@ -324,16 +328,30 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
     private JPanel createViewPanel()
     {
         JPanel ret = new JPanel();
-        ret.setLayout(new GridLayout(1, 1));
+        ret.setLayout(new GridBagLayout());
+        
+        GridBagConstraints gbc_toolsPanel = new GridBagConstraints();
+        gbc_toolsPanel.anchor = GridBagConstraints.WEST;
+        gbc_toolsPanel.fill = GridBagConstraints.VERTICAL;
+        gbc_toolsPanel.gridx = 0;
+        gbc_toolsPanel.gridy = 0;
+        ret.add(createToolsPanel(), gbc_toolsPanel);
         
         structurePanel = createStructurePanel();
         propertiesPanel = createPropertiesPanel();
-        
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         split.setTopComponent(structurePanel);
         split.setBottomComponent(propertiesPanel);
-        ret.add(split);
-        split.setDividerLocation(500);
+        
+        GridBagConstraints gbc_split = new GridBagConstraints();
+        gbc_split.insets = new Insets(0, 2, 0, 2);
+        gbc_split.weightx = 1.0;
+        gbc_split.weighty = 1.0;
+        gbc_split.fill = GridBagConstraints.BOTH;
+        gbc_split.gridx = 0;
+        gbc_split.gridy = 1;
+        ret.add(split, gbc_split);
+        split.setDividerLocation(400);
         
         return ret;
     }
@@ -382,11 +400,16 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
                         if (node != null)
                         {
                             showArea(node);
+                            btnShowAll.setEnabled(true);
                             /*areasync = false;
                             showAreaInLogicalTree(node);
                             areasync = true;*/
                         }
-                        browser.getWindow().notifyAreaSelection(node);
+                        else
+                        {
+                            btnShowAll.setEnabled(false);
+                        }
+                        getBrowser().getWindow().notifyAreaSelection(node);
                     }
                 }
             });
@@ -468,5 +491,39 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
         return probTable;
     }
 
+    private JPanel createToolsPanel()
+    {
+        JPanel toolsPanel = new JPanel();
+        GridBagLayout gbl_toolsPanel = new GridBagLayout();
+        gbl_toolsPanel.rowHeights = new int[]{26, 0};
+        gbl_toolsPanel.columnWeights = new double[]{0.0};
+        gbl_toolsPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+        toolsPanel.setLayout(gbl_toolsPanel);
+        
+        btnShowAll = new JButton("A");
+        btnShowAll.setEnabled(false);
+        btnShowAll.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) 
+            {
+                Area area = getSelectedArea();
+                if (area != null)
+                {
+                    getBrowser().getWindow().showAreas(area, null);
+                    getBrowser().getWindow().updateDisplay();
+                }
+            }
+        });
+        btnShowAll.setToolTipText("Show all child elements");
+        btnShowAll.setMargin(new Insets(2, 5, 2, 5));
+        //btnShowAll.setEnabled(false);
+        GridBagConstraints gbc_btnShowAll = new GridBagConstraints();
+        gbc_btnShowAll.anchor = GridBagConstraints.WEST;
+        gbc_btnShowAll.insets = new Insets(2, 5, 2, 5);
+        gbc_btnShowAll.gridx = 0;
+        gbc_btnShowAll.gridy = 0;
+        toolsPanel.add(btnShowAll, gbc_btnShowAll);
+        
+        return toolsPanel;
+    }
     
 }

@@ -10,8 +10,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -45,6 +48,7 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
     private JPanel boxTreePanel;
     private JPanel propertiesPanel;
     private JPanel viewPanel;
+    private JButton btnShowAll;
     
     private Page currentPage;
 
@@ -53,7 +57,7 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
     {
         super(browser);
         viewPanel = createViewPanel();
-        browser.getWindow().addCanvasClickListener(null, this, false);
+        browser.getWindow().addCanvasClickListener(this);
     }
 
     @Override
@@ -126,8 +130,8 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
     public void showBox(Box node)
     {
         //System.out.println("Node:" + node);
-        browser.getWindow().getOverlayDisplay().drawExtent(node);
-        browser.getWindow().updateDisplay();
+        getBrowser().getWindow().getOverlayDisplay().drawExtent(node);
+        getBrowser().getWindow().updateDisplay();
         displayBoxInfo(node);
     }
     
@@ -183,16 +187,30 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
     private JPanel createViewPanel()
     {
         JPanel ret = new JPanel();
-        ret.setLayout(new GridLayout(1, 1));
+        ret.setLayout(new GridBagLayout());
+        
+        GridBagConstraints gbc_toolsPanel = new GridBagConstraints();
+        gbc_toolsPanel.anchor = GridBagConstraints.WEST;
+        gbc_toolsPanel.fill = GridBagConstraints.VERTICAL;
+        gbc_toolsPanel.gridx = 0;
+        gbc_toolsPanel.gridy = 0;
+        ret.add(createToolsPanel(), gbc_toolsPanel);
         
         boxTreePanel = createBoxTreePanel();
         propertiesPanel = createPropertiesPanel();
-        
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         split.setTopComponent(boxTreePanel);
         split.setBottomComponent(propertiesPanel);
-        ret.add(split);
-        split.setDividerLocation(500);
+
+        GridBagConstraints gbc_split = new GridBagConstraints();
+        gbc_split.insets = new Insets(0, 2, 0, 2);
+        gbc_split.weightx = 1.0;
+        gbc_split.weighty = 1.0;
+        gbc_split.fill = GridBagConstraints.BOTH;
+        gbc_split.gridx = 0;
+        gbc_split.gridy = 1;
+        ret.add(split, gbc_split);
+        split.setDividerLocation(400);
         
         return ret;
     }
@@ -227,7 +245,12 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
                     Box node = (Box) boxTree.getLastSelectedPathComponent();
                     if (node != null)
                     {
+                        btnShowAll.setEnabled(true);
                         showBox(node);
+                    }
+                    else
+                    {
+                        btnShowAll.setEnabled(false);
                     }
                 }
             });
@@ -267,5 +290,39 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
         return infoTable;
     }
 
+    private JPanel createToolsPanel()
+    {
+        JPanel toolsPanel = new JPanel();
+        GridBagLayout gbl_toolsPanel = new GridBagLayout();
+        gbl_toolsPanel.rowHeights = new int[]{26, 0};
+        gbl_toolsPanel.columnWeights = new double[]{0.0};
+        gbl_toolsPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+        toolsPanel.setLayout(gbl_toolsPanel);
+        
+        btnShowAll = new JButton("A");
+        btnShowAll.setEnabled(false);
+        btnShowAll.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) 
+            {
+                Box box = getSelectedBox();
+                if (box != null)
+                {
+                    getBrowser().getWindow().showAllBoxes(box);
+                    getBrowser().getWindow().updateDisplay();
+                }
+            }
+        });
+        btnShowAll.setToolTipText("Show all child elements");
+        btnShowAll.setMargin(new Insets(2, 5, 2, 5));
+        //btnShowAll.setEnabled(false);
+        GridBagConstraints gbc_btnShowAll = new GridBagConstraints();
+        gbc_btnShowAll.anchor = GridBagConstraints.WEST;
+        gbc_btnShowAll.insets = new Insets(2, 5, 2, 5);
+        gbc_btnShowAll.gridx = 0;
+        gbc_btnShowAll.gridy = 0;
+        toolsPanel.add(btnShowAll, gbc_btnShowAll);
+        
+        return toolsPanel;
+    }
     
 }

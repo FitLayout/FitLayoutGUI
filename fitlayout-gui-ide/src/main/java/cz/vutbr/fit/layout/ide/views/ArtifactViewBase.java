@@ -13,13 +13,18 @@ import cz.vutbr.fit.layout.ide.Browser;
  */
 public abstract class ArtifactViewBase implements ArtifactView
 {
-    protected Browser browser;
+    private Browser browser;
     private boolean active;
 
     
     public ArtifactViewBase(Browser browser)
     {
         this.browser = browser;
+    }
+
+    public Browser getBrowser()
+    {
+        return browser;
     }
 
     public boolean isActive()

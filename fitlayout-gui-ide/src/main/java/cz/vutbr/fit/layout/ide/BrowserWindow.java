@@ -35,7 +35,6 @@ import cz.vutbr.fit.layout.model.Rectangular;
 import cz.vutbr.fit.layout.ontology.BOX;
 
 import javax.swing.JSplitPane;
-import javax.swing.JToolBar;
 
 import java.awt.GridBagConstraints;
 
@@ -50,7 +49,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
-import java.awt.GridLayout;
 import java.awt.Image;
 
 import javax.swing.event.ChangeEvent;
@@ -69,7 +67,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 
 import java.awt.Insets;
@@ -115,8 +112,7 @@ public class BrowserWindow
     private List<AreaSelectionListener> areaListeners;
     private List<TreeListener> treeListeners;
     private List<RectangleSelectionListener> rectangleListeners;
-    private List<CanvasClickListener> canvasClickAlwaysListeners;
-    private Map<JToggleButton, CanvasClickListener> canvasClickToggleListeners;
+    private List<CanvasClickListener> canvasClickListeners;
     
     //main tabs
     private List<BrowserTabState> browserTabs;
@@ -139,16 +135,8 @@ public class BrowserWindow
     private JScrollPane contentScroll = null;
     private JPanel contentCanvas = null;
     private JSplitPane mainSplitter = null;
-    private JToolBar showToolBar = null;
     private JButton redrawButton = null;
-    private JButton showBoxButton = null;
-    private JButton showAreaButton = null;
-    private JToolBar lookupToolBar = null;
-    private JPanel toolPanel = null;
-    private JButton refreshButton = null;
     private JSplitPane infoSplitter = null;
-    private JButton showArtAreaButton = null;
-    private JButton showColumnsButton = null;
     private JTabbedPane toolTabs = null;
     private JToggleButton screenShotButton = null;
     private List<JCheckBoxMenuItem> tabViewItems;
@@ -165,6 +153,7 @@ public class BrowserWindow
     private JPanel artifactToolsPanel;
     private JButton btnDeleteArtifact;
     private JButton btnRepository;
+    private JPanel contentToolsPanel;
 
 
     public BrowserWindow(Browser browser)
@@ -173,8 +162,7 @@ public class BrowserWindow
         areaListeners = new LinkedList<>();
         treeListeners = new LinkedList<>();
         rectangleListeners = new LinkedList<>();
-        canvasClickAlwaysListeners = new LinkedList<>();
-        canvasClickToggleListeners = new HashMap<>();
+        canvasClickListeners = new LinkedList<>();
         browserTabs = new LinkedList<>();
         tabViewItems = new LinkedList<>();
         artifactViews = new HashMap<>();
@@ -201,12 +189,6 @@ public class BrowserWindow
                 text,
                 "Info",
                 JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    public void addToolBar(JToolBar toolbar)
-    {
-        toolPanel.add(toolbar);
-        toolPanel.updateUI();
     }
 
     public void addToolPanel(String title, JComponent component)
@@ -256,18 +238,9 @@ public class BrowserWindow
         treeListeners.add(listener);
     }
     
-    public void addCanvasClickListener(String toggleButtonTitle, CanvasClickListener listener, boolean select)
+    public void addCanvasClickListener(CanvasClickListener listener)
     {
-        if (toggleButtonTitle == null)
-            canvasClickAlwaysListeners.add(listener);
-        else
-        {
-            JToggleButton button = createClickToggleButton(toggleButtonTitle);
-            if (select)
-                button.setSelected(true); //select the first button
-            canvasClickToggleListeners.put(button, listener);
-            getLookupToolBar().add(button);
-        }
+        canvasClickListeners.add(listener);
     }
     
     public void addRectangleSelectionListener(RectangleSelectionListener listener)
@@ -559,38 +532,11 @@ public class BrowserWindow
         return contentCanvas;
     }
     
-    private JToggleButton createClickToggleButton(String label)
-    {
-        JToggleButton button = new JToggleButton(label);
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                if (button.isSelected())
-                {
-                    for (JToggleButton other : canvasClickToggleListeners.keySet())
-                    {
-                        if (other != button)
-                            other.setSelected(false);
-                    }
-                }
-            }
-        });
-        //button.setText(label);
-        button.setToolTipText("Show " + label.toLowerCase() + " when the canvas is clicked");
-        return button;
-    }
-    
     /** This is called when the browser canvas is clicked */
     private void canvasClick(int x, int y)
     {
-        //always called listeners
-        for (CanvasClickListener listener : canvasClickAlwaysListeners)
+        for (CanvasClickListener listener : canvasClickListeners)
             listener.canvasClicked(x, y);
-        //selected listener by toggle buttons
-        for (JToggleButton button : canvasClickToggleListeners.keySet())
-        {
-            if (button.isSelected())
-                canvasClickToggleListeners.get(button).canvasClicked(x, y);
-        }
     }
     
     private void canvasPress(int x, int y)
@@ -715,7 +661,6 @@ public class BrowserWindow
         {
             container = new JPanel();
             container.setLayout(new BorderLayout());
-            container.add(getToolPanel(), BorderLayout.NORTH);
             container.add(getMainPanel(), BorderLayout.CENTER);
         }
         return container;
@@ -770,15 +715,66 @@ public class BrowserWindow
     {
         if (contentPanel == null)
         {
-            GridLayout gridLayout1 = new GridLayout();
-            gridLayout1.setRows(1);
             contentPanel = new JPanel();
-            contentPanel.setLayout(gridLayout1);
-            contentPanel.add(getContentScroll(), null);
+            GridBagLayout gbl_contentPanel = new GridBagLayout();
+            contentPanel.setLayout(gbl_contentPanel);
+            GridBagConstraints gbc_contentToolsPanel = new GridBagConstraints();
+            gbc_contentToolsPanel.fill = GridBagConstraints.BOTH;
+            gbc_contentToolsPanel.gridx = 0;
+            gbc_contentToolsPanel.gridy = 0;
+            contentPanel.add(getContentToolsPanel(), gbc_contentToolsPanel);
+            GridBagConstraints gbc_contentScroll = new GridBagConstraints();
+            gbc_contentScroll.insets = new Insets(0, 0, 5, 0);
+            gbc_contentScroll.weightx = 1.0;
+            gbc_contentScroll.weighty = 1.0;
+            gbc_contentScroll.fill = GridBagConstraints.BOTH;
+            gbc_contentScroll.gridx = 0;
+            gbc_contentScroll.gridy = 1;
+            contentPanel.add(getContentScroll(), gbc_contentScroll);
         }
         return contentPanel;
     }
 
+    private JPanel getContentToolsPanel()
+    {
+        if (contentToolsPanel == null)
+        {
+            contentToolsPanel = new JPanel();
+            
+            GridBagLayout gbl_toolsPanel = new GridBagLayout();
+            gbl_toolsPanel.rowHeights = new int[]{26, 0};
+            gbl_toolsPanel.columnWeights = new double[]{1.0};
+            gbl_toolsPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+            contentToolsPanel.setLayout(gbl_toolsPanel);
+            
+            GridBagConstraints gbc_btnRedraw = new GridBagConstraints();
+            gbc_btnRedraw.anchor = GridBagConstraints.WEST;
+            gbc_btnRedraw.insets = new Insets(2, 5, 2, 5);
+            gbc_btnRedraw.gridx = 0;
+            gbc_btnRedraw.gridy = 0;
+            contentToolsPanel.add(getRedrawButton(), gbc_btnRedraw);
+            
+            screenShotButton = new JToggleButton("S");
+            screenShotButton.setToolTipText("Show screenshot");
+            screenShotButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    ((BrowserPanel) contentCanvas).showScreenShot(screenShotButton.isSelected());
+                    updateDisplay();
+                }
+            });
+            screenShotButton.setMargin(new Insets(2, 5, 2, 5));
+            screenShotButton.setEnabled(false); //will be enabled when a screen shot is available
+            GridBagConstraints gbc_btnScreen = new GridBagConstraints();
+            gbc_btnScreen.anchor = GridBagConstraints.EAST;
+            gbc_btnScreen.insets = new Insets(2, 5, 2, 5);
+            gbc_btnScreen.gridx = 2;
+            gbc_btnScreen.gridy = 0;
+            contentToolsPanel.add(screenShotButton, gbc_btnScreen);
+        }
+        return contentToolsPanel;
+    }    
+    
     /**
      * This method initializes jPanel2  
      *  
@@ -877,26 +873,6 @@ public class BrowserWindow
         }
         return mainSplitter;
     }
-
-    /**
-     * This method initializes jToolBar 
-     *  
-     * @return javax.swing.JToolBar 
-     */
-    private JToolBar getShowToolBar()
-    {
-        if (showToolBar == null)
-        {
-            showToolBar = new JToolBar();
-            showToolBar.add(getRedrawButton());
-            showToolBar.add(getRefreshButton());
-            showToolBar.add(getShowBoxButton());
-            showToolBar.add(getShowAreaButton());
-            showToolBar.add(getShowArtAreaButton());
-            showToolBar.add(getShowColumnsButton());
-        }
-        return showToolBar;
-    }
     
     
     /**
@@ -924,120 +900,6 @@ public class BrowserWindow
     }
 
     /**
-     * This method initializes showBoxButton    
-     *  
-     * @return javax.swing.JButton  
-     */
-    private JButton getShowBoxButton()
-    {
-        if (showBoxButton == null)
-        {
-            showBoxButton = new JButton();
-            showBoxButton.setText("Show boxes");
-            showBoxButton.setToolTipText("Show all boxes in the selected tree");
-            showBoxButton.addActionListener(new java.awt.event.ActionListener()
-            {
-                public void actionPerformed(java.awt.event.ActionEvent e)
-                {
-                    /*Box node = boxTreeTab.getSelectedBox();
-                    if (node != null)
-                    {
-                        showAllBoxes(node);
-                        contentCanvas.repaint();
-                    }*/
-                }
-            });
-        }
-        return showBoxButton;
-    }
-
-    /**
-     * This method initializes showAreaButton   
-     *  
-     * @return javax.swing.JButton  
-     */
-    private JButton getShowAreaButton()
-    {
-        if (showAreaButton == null)
-        {
-            showAreaButton = new JButton();
-            showAreaButton.setText("Show areas");
-            showAreaButton.setToolTipText("Show all the areas in the selected area");
-            showAreaButton.addActionListener(new java.awt.event.ActionListener()
-            {
-                public void actionPerformed(java.awt.event.ActionEvent e)
-                {
-                    /*Area node = segmentationTab.getSelectedArea();
-                    if (node != null)
-                    {
-                        showAreas(node, null);
-                        contentCanvas.repaint();
-                    }*/
-                }
-            });
-        }
-        return showAreaButton;
-    }
-
-    /**
-     * This method initializes lookupToolBar    
-     *  
-     * @return javax.swing.JToolBar 
-     */
-    private JToolBar getLookupToolBar()
-    {
-        if (lookupToolBar == null)
-        {
-            lookupToolBar = new JToolBar();
-            //the default buttons are added in initGUI()
-        }
-        return lookupToolBar;
-    }
-
-    /**
-     * This method initializes jPanel   
-     *  
-     * @return javax.swing.JPanel   
-     */
-    private JPanel getToolPanel()
-    {
-        if (toolPanel == null)
-        {
-            FlowLayout flowLayout = new FlowLayout();
-            flowLayout.setAlignment(java.awt.FlowLayout.LEFT);
-            toolPanel = new JPanel();
-            //toolPanel.setLayout(new WrappingLayout(WrappingLayout.LEFT, 1, 1));
-            toolPanel.setLayout(new ToolbarLayout());
-            toolPanel.add(getShowToolBar());
-            toolPanel.add(getLookupToolBar());
-        }
-        return toolPanel;
-    }
-
-
-    /**
-     * This method initializes refreshButton    
-     *  
-     * @return javax.swing.JButton  
-     */
-    private JButton getRefreshButton()
-    {
-        if (refreshButton == null)
-        {
-            refreshButton = new JButton();
-            refreshButton.setText("Refresh");
-            refreshButton.setToolTipText("Refresh the tree views");
-            refreshButton.addActionListener(new java.awt.event.ActionListener()
-            {
-                public void actionPerformed(java.awt.event.ActionEvent e)
-                {
-                }
-            });
-        }
-        return refreshButton;
-    }
-
-    /**
      * This method initializes infoSplitter 
      *  
      * @return javax.swing.JSplitPane   
@@ -1053,12 +915,6 @@ public class BrowserWindow
             infoSplitter.setLeftComponent(artifactViewPanel);
             
             artifactViewPanel.setLayout(new GridBagLayout());
-            
-            GridBagConstraints gbc_toolsPanel = new GridBagConstraints();
-            gbc_toolsPanel.fill = GridBagConstraints.BOTH;
-            gbc_toolsPanel.gridx = 0;
-            gbc_toolsPanel.gridy = 0;
-            artifactViewPanel.add(createViewToolsPanel(), gbc_toolsPanel);
 
             GridBagConstraints gbc_artifactViewTabs = new GridBagConstraints();
             gbc_artifactViewTabs.insets = new Insets(0, 2, 0, 2);
@@ -1072,93 +928,6 @@ public class BrowserWindow
             infoSplitter.setRightComponent(getContentPanel());
         }
         return infoSplitter;
-    }
-
-    private JPanel createViewToolsPanel()
-    {
-        JPanel toolsPanel = new JPanel();
-        GridBagLayout gbl_toolsPanel = new GridBagLayout();
-        gbl_toolsPanel.rowHeights = new int[]{26, 0};
-        gbl_toolsPanel.columnWeights = new double[]{1.0};
-        gbl_toolsPanel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
-        toolsPanel.setLayout(gbl_toolsPanel);
-        
-        screenShotButton = new JToggleButton("S");
-        screenShotButton.setToolTipText("Show screenshot");
-        screenShotButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                ((BrowserPanel) contentCanvas).showScreenShot(screenShotButton.isSelected());
-                updateDisplay();
-            }
-        });
-        screenShotButton.setMargin(new Insets(2, 5, 2, 5));
-        screenShotButton.setEnabled(false); //will be enabled when a screen shot is available
-        GridBagConstraints gbc_btnScreen = new GridBagConstraints();
-        gbc_btnScreen.anchor = GridBagConstraints.EAST;
-        gbc_btnScreen.insets = new Insets(2, 5, 2, 5);
-        gbc_btnScreen.gridx = 0;
-        gbc_btnScreen.gridy = 0;
-        toolsPanel.add(screenShotButton, gbc_btnScreen);
-        
-        return toolsPanel;
-    }
-    
-    
-    /**
-     * This method initializes showArtAreaButton    
-     *  
-     * @return javax.swing.JButton  
-     */
-    private JButton getShowArtAreaButton()
-    {
-        if (showArtAreaButton == null)
-        {
-            showArtAreaButton = new JButton();
-            showArtAreaButton.setText("Art. areas");
-            showArtAreaButton.setToolTipText("Show artificial areas marked with <area>");       
-            showArtAreaButton.addActionListener(new java.awt.event.ActionListener()
-            {
-                public void actionPerformed(java.awt.event.ActionEvent e)
-                {
-                    /*Area node = segmentationTab.getSelectedArea();
-                    if (node != null)
-                    {
-                        showAreas(node, "<area");
-                        contentCanvas.repaint();
-                    }*/
-                }
-            });
-        }
-        return showArtAreaButton;
-    }
-
-    /**
-     * This method initializes showColumnsButton    
-     *  
-     * @return javax.swing.JButton  
-     */
-    private JButton getShowColumnsButton()
-    {
-        if (showColumnsButton == null)
-        {
-          showColumnsButton = new JButton();
-          showColumnsButton.setText("Chunks");
-          showColumnsButton.setToolTipText("Show chunk areas marked with <chunk:*>");
-          showColumnsButton.addActionListener(new java.awt.event.ActionListener()
-          {
-              public void actionPerformed(java.awt.event.ActionEvent e)
-              {
-                  /*Area node = segmentationTab.getSelectedArea();
-                  if (node != null)
-                  {
-                      showAreas(node, "<chunk");
-                      contentCanvas.repaint();
-                  }*/
-              }
-          });
-        }
-        return showColumnsButton;
     }
 
     private JTabbedPane getToolTabs()

@@ -31,8 +31,8 @@ public interface ArtifactView
     public String getTitle();
     
     /**
-     * Obtains a new panel that is able to show the artifact details.
-     * @return
+     * Obtains a panel that is able to show the artifact details.
+     * @return the view panel
      */
     public JPanel getViewPanel();
     

@@ -51,7 +51,7 @@ public class LogicalTreeView extends ArtifactViewBase implements CanvasClickList
     {
         super(browser);
         viewPanel = createViewPanel();
-        browser.getWindow().addCanvasClickListener(null, this, false);
+        browser.getWindow().addCanvasClickListener(this);
     }
 
     @Override
