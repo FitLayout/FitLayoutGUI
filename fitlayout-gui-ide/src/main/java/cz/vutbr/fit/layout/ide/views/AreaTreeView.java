@@ -103,13 +103,11 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
     @Override
     public void canvasClicked(int x, int y)
     {
-        System.out.println("Active: " + isActive());
         if (isActive())
         {
             List<Area> nodes = currentAreaTree.getAreasAt(x, y);
             if (!nodes.isEmpty())
             {
-                System.out.println("All: " + nodes);
                 Area node = nodes.get(nodes.size() - 1);
                 if (getSelectedArea() != null)
                 {
@@ -123,7 +121,6 @@ public class AreaTreeView extends ArtifactViewBase implements CanvasClickListene
                         node = nodes.get(i);
                     }
                 }
-                System.out.println("Using: " + node);
                 showAreaInTree(node);
                 //showAreaInLogicalTree(node);
             }

@@ -12,6 +12,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -95,9 +96,24 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
     {
         if (isActive())
         {
-            Box node = currentPage.getBoxAt(x, y);
-            if (node != null)
+            List<Box> nodes = currentPage.getBoxesAt(x, y);
+            if (!nodes.isEmpty())
+            {
+                Box node = nodes.get(nodes.size() - 1);
+                if (getSelectedBox() != null)
+                {
+                    int i = nodes.indexOf(getSelectedBox());
+                    if (i != -1) //already selected; try the previous one
+                    {
+                        if (i == 0)
+                            i = nodes.size() - 1;
+                        else
+                            i = i - 1;
+                        node = nodes.get(i);
+                    }
+                }
                 showBoxInTree(node);
+            }
         }
     }
 
