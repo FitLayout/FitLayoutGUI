@@ -400,6 +400,8 @@ public class BrowserWindow
                 ret = browser.getRepository().getArtifact(ret.getIri());
         }
         lastSelectedArtifact = ret; //store for repeated use
+        if (ret instanceof Page)
+            lastSelectedPage = (Page) ret;
         return ret;
     }
 
@@ -432,6 +434,7 @@ public class BrowserWindow
             else
                 selPage = (Page) browser.getRepository().getArtifact(selected.getIri());
         }
+        lastSelectedPage = selPage;
         lastSelectedArtifact = selPage; //store for repeated use
         return selPage;
     }
