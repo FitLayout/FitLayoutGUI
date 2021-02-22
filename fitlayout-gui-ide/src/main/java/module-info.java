@@ -11,7 +11,6 @@ module cz.vutbr.fit.layout.ide
     requires cz.vutbr.fit.layout.segm;
     requires cz.vutbr.fit.layout.vips;
     requires cz.vutbr.fit.layout.bcs;
-    requires cz.vutbr.fit.layout.tools;
     requires cz.vutbr.fit.layout.rdf;
     
     exports cz.vutbr.fit.layout.ide.config;
