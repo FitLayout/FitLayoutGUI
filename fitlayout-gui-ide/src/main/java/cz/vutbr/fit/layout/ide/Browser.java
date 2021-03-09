@@ -9,13 +9,10 @@ import java.awt.EventQueue;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,20 +131,8 @@ public class Browser
      */
     public void deleteArtifact(Artifact artifact)
     {
-        DefaultMutableTreeNode node = window.getArtifactTreeModel().getNodeForArtifact(artifact);
-        if (node != null)
-        {
-            Enumeration<TreeNode> e = node.depthFirstEnumeration();
-            while (e.hasMoreElements())
-            {
-                Object desc = ((DefaultMutableTreeNode) e.nextElement()).getUserObject();
-                if (desc != null && desc instanceof Artifact)
-                {
-                    getRepository().removeArtifact(((Artifact) desc).getIri());
-                }
-            }
-            window.updateArtifactTree();
-        }
+        getRepository().removeArtifact(artifact.getIri());
+        window.updateArtifactTree();
     }
     
     
