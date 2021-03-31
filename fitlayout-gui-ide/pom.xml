@@ -80,6 +80,11 @@
 			<version>${fitlayout.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>cz.vutbr.fit.layout</groupId>
+			<artifactId>fitlayout-text</artifactId>
+			<version>${fitlayout.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.2.3</version>

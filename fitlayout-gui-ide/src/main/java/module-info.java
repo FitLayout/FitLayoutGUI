@@ -12,6 +12,7 @@ module cz.vutbr.fit.layout.ide
     requires cz.vutbr.fit.layout.vips;
     requires cz.vutbr.fit.layout.bcs;
     requires cz.vutbr.fit.layout.rdf;
+    requires cz.vutbr.fit.layout.text;
     
     exports cz.vutbr.fit.layout.ide.config;
     exports cz.vutbr.fit.layout.ide.service;
