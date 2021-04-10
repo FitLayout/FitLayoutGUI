@@ -19,7 +19,6 @@ import javax.swing.JPanel;
 import cz.vutbr.fit.layout.api.ArtifactService;
 import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.views.ArtifactProviderPanel;
-import cz.vutbr.fit.layout.impl.DefaultContentRect;
 import cz.vutbr.fit.layout.model.AreaTree;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.ontology.SEGM;
@@ -73,7 +72,6 @@ public class SegmentationPanel extends ArtifactProviderPanel
     
     public void segmentPage()
     {
-        DefaultContentRect.resetId(); //reset the default ID generator to obtain the same IDs for every segmentation
         if (getServiceCombo().getSelectedIndex() != -1)
         {
             // create the area tree using the selected provider
