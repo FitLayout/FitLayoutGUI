@@ -42,4 +42,10 @@ public class BasicRepositoryService extends BaseRepositoryService
         return defaultRepository;
     }
 
+    @Override
+    public String getCategory()
+    {
+        return "Storage";
+    }
+
 }

@@ -47,6 +47,12 @@ public class NativeRDFRepositoryService extends BaseRepositoryService
         return "A RDF4J native repository";
     }
 
+    @Override
+    public String getCategory()
+    {
+        return "Storage";
+    }
+
     public String getDataDir()
     {
         return dataDir;

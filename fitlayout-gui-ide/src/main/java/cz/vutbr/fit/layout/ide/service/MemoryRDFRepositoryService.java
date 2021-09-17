@@ -47,6 +47,12 @@ public class MemoryRDFRepositoryService extends BaseRepositoryService
         return "A RDF4J in-memory repository";
     }
 
+    @Override
+    public String getCategory()
+    {
+        return "Storage";
+    }
+
     public String getDataDir()
     {
         return dataDir;

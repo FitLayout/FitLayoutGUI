@@ -48,6 +48,12 @@ public class HTTPRDFRepositoryService extends BaseRepositoryService
         return "A remote RDF4J repository connected via HTTP";
     }
 
+    @Override
+    public String getCategory()
+    {
+        return "Storage";
+    }
+
     public String getServerUrl()
     {
         return serverUrl;
