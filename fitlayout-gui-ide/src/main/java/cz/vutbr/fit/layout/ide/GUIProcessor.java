@@ -37,6 +37,12 @@ public class GUIProcessor extends BaseProcessor
         operatorParams = new ArrayList<Map<String, Object>>();
     }
 
+    @Override
+    protected ServiceManager createServiceManager()
+    {
+        return FLConfig.createServiceManager(null);
+    }
+
     /**
      * Creates a new artifact from the nearest applicable parent using the given provider
      * and adds the new artifact to the artifact tree.
