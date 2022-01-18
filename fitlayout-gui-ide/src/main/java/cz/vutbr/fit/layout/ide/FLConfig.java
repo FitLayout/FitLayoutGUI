@@ -83,7 +83,7 @@ public class FLConfig
         tagConfig.setTagger(new DefaultTag("FitLayout.TextTag", "locations"), new LocationsTagger());
         sm.addArtifactService(new TextChunksProvider(tagConfig));
         TagEntitiesOperator tagOp = new TagEntitiesOperator();
-        tagOp.addTaggers(tagConfig.getTaggers().values());
+        tagOp.setTaggers(tagConfig.getTaggers());
         addAreaTreeOperator(sm, tagOp);
         
         //use RDF storage as the artifact repository
