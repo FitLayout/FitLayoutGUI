@@ -14,7 +14,6 @@ import org.eclipse.rdf4j.model.IRI;
 import cz.vutbr.fit.layout.api.AreaTreeOperator;
 import cz.vutbr.fit.layout.api.ArtifactService;
 import cz.vutbr.fit.layout.api.ServiceManager;
-import cz.vutbr.fit.layout.impl.BaseProcessor;
 import cz.vutbr.fit.layout.model.AreaTree;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.provider.OperatorApplicationProvider;
