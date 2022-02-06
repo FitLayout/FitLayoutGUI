@@ -55,7 +55,7 @@ public abstract class BaseProcessor
      */
     protected ServiceManager createServiceManager()
     {
-        return ServiceManager.createAndDiscover();
+        return ServiceManager.create();
     }
     
     /**
