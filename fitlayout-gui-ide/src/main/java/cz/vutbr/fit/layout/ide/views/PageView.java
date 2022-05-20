@@ -30,12 +30,12 @@ import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.Utils;
 import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.misc.ContentTreeCellRenderer;
-import cz.vutbr.fit.layout.meta.MetadataExtractor;
 import cz.vutbr.fit.layout.ide.misc.BoxTreeModel;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.model.Box;
 import cz.vutbr.fit.layout.model.Page;
 import cz.vutbr.fit.layout.ontology.BOX;
+import cz.vutbr.fit.layout.rdf.MetadataExtractor;
 
 /**
  * 
