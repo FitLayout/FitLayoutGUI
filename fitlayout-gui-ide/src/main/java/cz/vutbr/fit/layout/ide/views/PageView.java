@@ -30,6 +30,7 @@ import cz.vutbr.fit.layout.ide.Browser;
 import cz.vutbr.fit.layout.ide.Utils;
 import cz.vutbr.fit.layout.ide.api.CanvasClickListener;
 import cz.vutbr.fit.layout.ide.misc.ContentTreeCellRenderer;
+import cz.vutbr.fit.layout.meta.MetadataExtractor;
 import cz.vutbr.fit.layout.ide.misc.BoxTreeModel;
 import cz.vutbr.fit.layout.model.Artifact;
 import cz.vutbr.fit.layout.model.Box;
@@ -86,6 +87,10 @@ public class PageView extends ArtifactViewBase implements CanvasClickListener
         {
             currentPage = (Page) artifact;
             boxTree.setModel(new BoxTreeModel(currentPage.getRoot()));
+            //show metadata
+            var model = MetadataExtractor.extract(currentPage);
+            System.out.println("Metadata: ");
+            System.out.println(model);
         }
     }
     
