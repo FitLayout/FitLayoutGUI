@@ -1,3 +1,11 @@
-/bin
-/target
+/**/bin
+/**/target
 /dependency-reduced-pom.xml
+*~
+.metadata/
+.settings/
+.apt*/
+.project
+.classpath
+.factorypath
+config.test.properties
