@@ -11,6 +11,7 @@ import cz.vutbr.fit.layout.bcs.BCSProvider;
 import cz.vutbr.fit.layout.cssbox.CSSBoxTreeProvider;
 import cz.vutbr.fit.layout.impl.DefaultTag;
 import cz.vutbr.fit.layout.pdf.PDFBoxTreeProvider;
+import cz.vutbr.fit.layout.playwright.PlaywrightTreeProvider;
 import cz.vutbr.fit.layout.provider.OperatorWrapperProvider;
 import cz.vutbr.fit.layout.provider.VisualBoxTreeProvider;
 import cz.vutbr.fit.layout.puppeteer.PuppeteerTreeProvider;
@@ -56,6 +57,7 @@ public class FLConfig
         //renderers
         sm.addArtifactService(new CSSBoxTreeProvider());
         sm.addArtifactService(new PuppeteerTreeProvider());
+        sm.addArtifactService(new PlaywrightTreeProvider());
         sm.addArtifactService(new PDFBoxTreeProvider());
         
         //visual box tree construction
